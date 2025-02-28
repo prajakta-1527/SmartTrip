@@ -67,7 +67,7 @@ export default function Location() {
     // This loads the google maps script into our application
     const { isLoaded } = useLoadScript({
         // your API key will be publicly exposed, so be sure to apply HTTP restrictions on the Google Cloud console
-        googleMapsApiKey: process.env.LOCATION_API_KEY as string,
+        googleMapsApiKey: process.env.NEXT_PUBLIC_LOCATION_KEY as string,
         // This specifies the google maps libraries that we want to load (e.g. we could add drawing, geometry, places etc)
         libraries: libraries as any,
     });

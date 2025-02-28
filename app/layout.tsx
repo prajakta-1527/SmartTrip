@@ -8,7 +8,7 @@ import ActiveStatus from './components/ActiveStatus';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SmartTrip - Your Ultimate  Experience',
+  title: 'SmartTrip - Group Travel Made Easy',
 
   description:
     'SmartTrip is a travel companion that helps you plan, organize, and share your travel experiences with ease.',
