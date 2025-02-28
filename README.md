@@ -37,6 +37,7 @@ effectively, reducing confusion and miscommunication.
 
 
 3. Location Map
+<img width="1268" alt="Screenshot 2025-02-28 at 6 39 16 PM" src="https://github.com/user-attachments/assets/d5494129-9cc1-489f-ad66-8a172ae0278b" />
 <img width="1470" alt="Screenshot 2025-02-28 at 6 15 00 PM" src="https://github.com/user-attachments/assets/70ea55e0-6238-4772-8b36-6ce0709ff9d3" />
 
 
