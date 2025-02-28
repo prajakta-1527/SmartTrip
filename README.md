@@ -1,11 +1,10 @@
-# SmartTrip - Group Travel Made Easy
 
 ---
 ## **Contents**
 - [Purpose](#Purpose)
 - [Preview](#Preview)
 - [TechStack](#TechStack)
-- [APIs Used](#apis-used)
+- [APIs Used](#apisused)
 - [Features Currently Implemented](#Features-Currently-Implemented)
 - [Features to be Implemented](#Features-to-be-Implemented)
 - [Preliminary Setup](#PreliminarySetup)
@@ -27,15 +26,19 @@ effectively, reducing confusion and miscommunication.
 
 ## **Preview**
 1. Register and Login
-
-
+<img width="1470" alt="Screenshot 2025-02-28 at 6 08 28 PM" src="https://github.com/user-attachments/assets/8134489c-caf1-441e-9473-ad48b5d46afb" />
 
 
 2. Enter a group or personal chat
+<img width="1470" alt="Screenshot 2025-02-28 at 6 09 52 PM" src="https://github.com/user-attachments/assets/79a051df-506e-4721-92a0-59c0213e7d38" />
+
+<img width="1470" alt="Screenshot 2025-02-28 at 6 10 29 PM" src="https://github.com/user-attachments/assets/9a145803-87fe-472e-9dd7-feb5e139628d" />
+<img width="1470" alt="Screenshot 2025-02-28 at 6 28 15 PM" src="https://github.com/user-attachments/assets/88c907f3-f280-423e-aa4a-d5c71f1eb491" />
 
 
+3. Location Map
+<img width="1470" alt="Screenshot 2025-02-28 at 6 15 00 PM" src="https://github.com/user-attachments/assets/70ea55e0-6238-4772-8b36-6ce0709ff9d3" />
 
-3. Location Map 
 
 ## **Tech stack**
 
