@@ -5,13 +5,54 @@ import {
     MarkerF,
     useLoadScript,
 } from "@react-google-maps/api";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PlacesAutocomplete } from "../components/PlacesAutoComplete";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
+import getSession from "../actions/getSession";
+
+import { SendLocation } from "@/app/hooks/useLocation";
+import { useLiveLocations } from "@/app/hooks/useLiveLocation";
+import useCurrentUser from "../hooks/useCurrentUser";
+import prisma from "@/app/libs/prismadb";
+
+
 
 const DEFAULT_LOCATION = { lat: 37.98, lng: 23.72 };
 
 export default function Location() {
+    const [user, setUser] = useState(null);
+    const [locationUpdates, setLocationUpdates] = useState(null);
+    const [currentUser, setCurrentUser] = useState("");
+    const user_email = useCurrentUser()
+    // setCurrentUser(user_email || "")
+    // console.log(useCurrentUser());
+    
+    // console.log(useLiveLocations());
+    // console.log("User ID:", user);
+    // // Replace with dynamic user ID
+
+
+    // useEffect(()=>{
+    //     if (user) {
+    //         console.log("User ID:", user);
+    //     }
+    //     const fetchLocationUpdates = () => {
+    //         const location_updates =  useLiveLocations();
+    //         console.log("Location updates:", location_updates);
+    //         // setLocationUpdates(location_updates);
+
+    //     } // Get real-time locations
+    //     fetchLocationUpdates();
+    //     const interval = setInterval(() => {
+    //         fetchLocationUpdates();
+    //     }
+    //     , 10000); // Fetch every 10 seconds
+    //     return () => clearInterval(interval);
+    // },[user])
+    // // useSendLocation(user); // Send location updates
+
+
+    // console.log("Live locations:", location_updates);
     const [lat, setLat] = useState(DEFAULT_LOCATION.lat);
     const [lng, setLng] = useState(DEFAULT_LOCATION.lng);
     const [curlat, setCurlat] = useState(0);
@@ -41,22 +82,57 @@ export default function Location() {
         setCurlng(position.coords.longitude);
     });
 
+    // const a = SendLocation("67b5f568e34e2d7904a7859d", curlat, curlng);
+
+    const locationUpdate = async (curlat: number, curlng: number, user: any) => {
+        try {
+          await fetch("/api/location", {
+            method: "POST",
+            body: JSON.stringify({ 
+               userId: user,
+               location: { lat: curlat, lng: curlng }
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+        } catch (error) {
+          console.error("Error updating admin controls:", error);
+        }
+      };
+
+    useEffect(()=>{
+        if (user_email !== null){
+        locationUpdate(curlat, curlng, user_email);}
+    })
 
 
-    var locations = [
+    const loc = useLiveLocations();
+    console.log(loc)
 
-        { lat: 37.783333, lng: -122.416667, title: "Location 1" },
-        { lat: 40.7128, lng: -74.0060, title: "Location 2" },
-        { lat: curlat, lng: curlng, title: "Current Location" },
-        // Add more locations here
-    ];
+    const locations = Object.keys(loc).map((key, index)=>{
+        const title = key;
+        const lat = loc[key]['lat']
+        const lng = loc[key]['lng']
+        const image = loc[key]['image']
+        return {lat:lat, lng:lng, title:title, image:image}
+    })
+
+    
 
 
+    // var locations = [
 
+    //     { lat: 37.783333, lng: -122.416667, title: "Location 1" },
+    //     { lat: 40.7128, lng: -74.0060, title: "Location 2" },
+    //     { lat: curlat, lng: curlng, title: "Current Location" },
+    //     // Add more locations here
+    // ];
+
+    console.log(curlat, curlng)
     const markers = useMemo(() =>
         locations.map(location => ({
             position: { lat: location.lat, lng: location.lng },
-            title: location.title
+            title: location.title,  
+            image: location.image
         })), [locations]
     );
 
@@ -134,6 +210,14 @@ export default function Location() {
                                             position={marker.position}
                                             onLoad={() => console.log("Marker loaded")}
                                             title={marker.title}
+                                            icon={{
+                                                url: marker.image,
+                                                scaledSize: new google.maps.Size(40, 40), // Adjust size as needed
+                                                origin: new google.maps.Point(0, 0), // Optional: Adjust origin
+                                                anchor: new google.maps.Point(20, 40), //   
+
+                                            }}
+                                            // icon={}
                                         />
                                     );
                                 })}
@@ -161,11 +245,6 @@ export default function Location() {
                     </div>
                 </div>
             </>
-
-
-
-
-
 
         </>
     );
