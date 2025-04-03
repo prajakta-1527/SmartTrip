@@ -1,6 +1,6 @@
 "use client";
 import {
-    //CircleF,
+    // CircleF,
     GoogleMap,
     MarkerF,
     useLoadScript,
@@ -48,9 +48,7 @@ export default function Location() {
         { lat: 37.783333, lng: -122.416667, title: "Location 1" },
         { lat: 40.7128, lng: -74.0060, title: "Location 2" },
         { lat: curlat, lng: curlng, title: "Current Location" },
-
         // Add more locations here
-
     ];
 
 
@@ -72,72 +70,103 @@ export default function Location() {
         libraries: libraries as any,
     });
 
+    const places = [
+        "place1",
+        "place2",
+        "place3",
+        "place4",
+    ];
+
     if (!isLoaded) {
         return <p>Loading...</p>;
     }
 
     return (
         <>
-            <main className="flex justify-center align-center">
-                <div className="border border-r-gray-400 w-1/4 h-screen bg-gray-200">
-                    <PlacesAutocomplete
-                        onAddressSelect={(address) => {
-                            getGeocode({ address }).then((results) => {
-                                const { lat, lng } = getLatLng(results[0]);
-                                setLat(lat);
-                                setLng(lng);
-                            });
-                        }}
-                    />
+            <>
+                <div className="flex flex-col">
+                    <div className="flex flex-row justify-between p-4">
+                        {places.map((place, index) => {
+                            return (
+                                <div key={index} className="p-6 m-8 rounded-sm shadow-md">
+                                    {place}
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
-                <GoogleMap
-                    options={mapOptions}
-                    zoom={14}
-                    center={mapCenter}
-                    mapTypeId={google.maps.MapTypeId.ROADMAP}
-                    mapContainerClassName="w-3/4"
-                    //mapContainerStyle={{ width: "800px", height: "800px" }}
-                    onLoad={() => console.log("Map component loaded")}
-                >
-                    {/* This draws a marker over the map
+                <div className="flex flex-row">
+                    <div className="w-3/4">
+                        <main className="flex justify-center align-center m-12 h-[800px] rounded-md shadow-md">
+                            <div className="border border-r-gray-400 w-1/4 h-full" style={{ display: "none" }}>
+                                <PlacesAutocomplete
+                                    onAddressSelect={(address) => {
+                                        getGeocode({ address }).then((results) => {
+                                            const { lat, lng } = getLatLng(results[0]);
+                                            setLat(lat);
+                                            setLng(lng);
+                                        });
+                                    }}
+                                />
+                            </div>
+                            <GoogleMap
+                                options={mapOptions}
+                                zoom={14}
+                                center={mapCenter}
+                                mapTypeId={google.maps.MapTypeId.ROADMAP}
+                                mapContainerClassName="w-full"
+                                //mapContainerStyle={{ width: "800px", height: "800px" }}
+                                onLoad={() => console.log("Map component loaded")}
+                            >
+                                {/* This draws a marker over the map
           position prop specifies the lat + long of where to place ther marker
         */}
-                    <MarkerF
-                        position={mapCenter}
-                        onLoad={() => console.log("Marker loaded")}
-                    /* you can also change the icon of the marker 
-                    icon="https://picsum.photos/64"*/
-                    />
+                                <MarkerF
+                                    position={mapCenter}
+                                    onLoad={() => console.log("Marker loaded")}
+                                    title="Location"
+                                />
 
-                    {markers.map((marker, idx) => {
-                        return (
-                            <MarkerF
-                                key={idx}
-                                position={marker.position}
-                                onLoad={() => console.log("Marker loaded")}
-                                title={marker.title}
-                            />
-                        );
-                    })}
+                                {markers.map((marker, idx) => {
+                                    return (
+                                        <MarkerF
+                                            key={idx}
+                                            position={marker.position}
+                                            onLoad={() => console.log("Marker loaded")}
+                                            title={marker.title}
+                                        />
+                                    );
+                                })}
 
-                    {/* we can also draw circles around the map */}
-                    {/* {[1000, 2500].map((radius, idx) => {
-          return (
-            <CircleF
-              key={idx}
-              center={mapCenter}
-              radius={radius}
-              onLoad={() => console.log("Circle Load...")}
-              options={{
-                fillColor: radius > 1000 ? "red" : "green",
-                strokeColor: radius > 1000 ? "red" : "green",
-                strokeOpacity: 0.8,
-              }}
-            />
-          );
-        })} */}
-                </GoogleMap>
-            </main>
+                                {/* we can also draw circles around the map */}
+                                {/* {[1000, 2500].map((radius, idx) => {
+                            return (
+                                <CircleF
+                                    key={idx}
+                                    center={mapCenter}
+                                    radius={radius}
+                                    onLoad={() => console.log("Circle Load...")}
+                                    options={{
+                                        fillColor: radius > 1000 ? "red" : "green",
+                                        strokeColor: radius > 1000 ? "red" : "green",
+                                        strokeOpacity: 0.8,
+                                    }}
+                                />
+                            );
+                        })} */}
+                            </GoogleMap>
+                        </main>
+                    </div>
+                    <div className="w-1/4">
+                    </div>
+                </div>
+            </>
+
+
+
+
+
+
         </>
     );
 }
