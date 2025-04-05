@@ -25,6 +25,7 @@ export default function Location() {
   const user_email = useCurrentUser();
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversationId");
+  const [weatherData, setWeatherData] = useState<Record<string, any>>({});
 
   const [lat, setLat] = useState(DEFAULT_LOCATION.lat);
   const [lng, setLng] = useState(DEFAULT_LOCATION.lng);
@@ -138,6 +139,38 @@ export default function Location() {
     [filteredLocations]
   );
 
+  useEffect(() => {
+    const fetchWeather = async () => {
+      if (places.length === 0) return;
+  
+      // Get city names or fallback to name
+      const locationNames = places
+        .map((p) => p.properties.city || p.properties.name || "")
+        .filter(Boolean);
+  
+      try {
+        const response = await axios.get("/api/weather", {
+          params: {
+            locations: locationNames.join(","),
+            detailed: false, // or true if you want 5-day forecast
+          },
+        });
+  
+        // Store data using the original location names as keys
+        const results = response.data.results;
+        const weatherMap: Record<string, any> = {};
+        results.forEach((item: any) => {
+          weatherMap[item.location] = item;
+        });
+  
+        setWeatherData(weatherMap);
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+      }
+    };
+  
+    fetchWeather();
+  }, [places]);
   if (!isLoaded) return <p>Loading...</p>;
   console.log("places"  , places);
   return (
@@ -189,19 +222,50 @@ export default function Location() {
           </h1>
           <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
             <div className="flex flex-col gap-4">
-            {places.map((place, index) => (
-              <div
-                key={index}
-                className="w-full p-6 rounded-md shadow-md bg-white"
-              >
-                <h2 className="text-lg font-semibold">
-                  {place.properties.name || "Unnamed Place"}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  {place.properties.formatted || "No address available"}
-                </p>
-              </div>
-            ))}
+            {places.map((place, index) => {
+  const locationKey = place.properties.city || place.properties.name;
+  const weather = weatherData[locationKey];
+
+  const handleSelect = async () => {
+    const lat = place.properties.lat;
+    const lon = place.properties.lon;
+
+    if (lat && lon) {
+      setLat(parseFloat(lat));
+      setLng(parseFloat(lon));
+    } else {
+      // Fallback: try geocoding the name
+      const results = await getGeocode({ address: place.properties.name });
+      const { lat, lng } = await getLatLng(results[0]);
+      setLat(lat);
+      setLng(lng);
+    }
+  };
+
+  return (
+    <div
+      key={index}
+      onClick={handleSelect}
+      className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
+    >
+      <h2 className="text-lg font-semibold">
+        {place.properties.name || "Unnamed Place"}
+      </h2>
+      <p className="text-sm text-gray-600">
+        {place.properties.formatted || "No address available"}
+      </p>
+      {weather ? (
+        <div className="mt-2 text-sm text-blue-800">
+          🌡 Temp: {weather.temperature}°C <br />
+          💧 Humidity: {weather.humidity}% <br />
+          🌤 {weather.weather}
+        </div>
+      ) : (
+        <p className="text-xs text-gray-400">Fetching weather...</p>
+      )}
+    </div>
+  );
+})}
 
             </div>
           </ScrollArea>
