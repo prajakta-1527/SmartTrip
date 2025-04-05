@@ -128,6 +128,8 @@ effectively, reducing confusion and miscommunication.
     PUSHER_SECRET=<YOUR_PUSHER_SECRET_KEY>
 
     NEXT_PUBLIC_LOCATION_KEY=<YOUR_GOOGLE_MAP_API_KEY>
+    GEOAPIFY_API_KEY=<YOUR_GEOAPIFY_API_KEY>
+    NEXT_PUBLIC_WEATHER_API_KEY=<YOUR_NEXT_PUBLIC_WEATHER_API_KEY>
     ```
 3. Next, download the required modules using the command - 
 
