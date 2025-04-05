@@ -5,8 +5,7 @@
 - [Preview](#Preview)
 - [TechStack](#TechStack)
 - [APIs Used](#apisused)
-- [Features Currently Implemented](#Features-Currently-Implemented)
-- [Features to be Implemented](#Features-to-be-Implemented)
+- [Features Implemented](#Features-Implemented)
 - [Preliminary Setup](#PreliminarySetup)
 - [Steps to run](#Steps-to-run)
 - [Team](#team)
@@ -33,18 +32,41 @@ effectively, reducing confusion and miscommunication.
 <img width="1470" alt="Screenshot 2025-02-28 at 6 09 52 PM" src="https://github.com/user-attachments/assets/79a051df-506e-4721-92a0-59c0213e7d38" />
 
 <img width="1470" alt="Screenshot 2025-02-28 at 6 10 29 PM" src="https://github.com/user-attachments/assets/9a145803-87fe-472e-9dd7-feb5e139628d" />
+<img width="1470" alt="Screenshot 2025-04-05 at 11 32 53 PM" src="https://github.com/user-attachments/assets/dc17775e-8bf3-4ee4-b5d8-f0368d365674" />
+3. Group chat creation pop-up in a trip planning interface.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 34 54 PM" src="https://github.com/user-attachments/assets/827584a0-8051-4657-ba7a-365cd6512d53" />
+
+4. Group chat screen discussing trip plans with shared images and location
 <img width="1470" alt="Screenshot 2025-02-28 at 6 28 15 PM" src="https://github.com/user-attachments/assets/88c907f3-f280-423e-aa4a-d5c71f1eb491" />
 
 
-3. Location Map
-<img width="1268" alt="Screenshot 2025-02-28 at 6 39 16 PM" src="https://github.com/user-attachments/assets/d5494129-9cc1-489f-ad66-8a172ae0278b" />
-<img width="1470" alt="Screenshot 2025-02-28 at 6 15 00 PM" src="https://github.com/user-attachments/assets/70ea55e0-6238-4772-8b36-6ce0709ff9d3" />
+5. Group details screen displaying name, members, creation date and delete options.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/543bc733-aae1-4db6-a554-520394cfa269" />
+
+
+6. Location Map: Once a group is selected, users can view the real-time location of all members in the group who are active. Users can zoom in and out
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/5186991e-0747-474a-af6f-7652e03a08af" />
+
+
+7. Searching Nearby Places based on User prompts like radius in kilometers, minimum distance, preferred type - hotels, restaurants etc.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/e27edc69-7b6e-4ca1-89b6-408ae8813fca" />
+
+
+8. The recommended places from the GeoApify API are displayed as cards, each showing detailed address and weather details from the weather API, allowing users to pin their favorite spots for others to view.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/4f214443-d347-4e7d-aa8f-64b8dfed9a71" />
+
+
+9. Users can select a location from the list of recommended places. The pinned location is visible to everyone, along with the distance from each user in the group. The user who pinned it appears in the title.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/be535797-67d9-4c63-86bc-45b8f925ca3b" />
+
+
+10. The live locations of group members are visible in the map along with the pinned location allowing them to visualise the distance from desired destination.
+<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/a9e31eac-ea16-4f14-8ae9-24c9c95d41b3" />
 
 
 ## **Tech stack**
 
 - Next.js
-- React.js
 - TypeScript
 - MongoDB
 - NextAuth
@@ -59,9 +81,11 @@ effectively, reducing confusion and miscommunication.
 - Pusher API - For enabling chats, uses WebSockets to share messages.
 - Google Maps API - For fetching real time location of user.access
 - Geoapify API - For personalized place recommendations that match group preferences
+- GoogleAuth API: Secures user login and prevents unauthorized access.
+- OpenWeatherMap API: Shows current and forecasted weather for travel planning.
 
 
-## **Features Currently Implemented** 
+## **Features Implemented** 
 - User Authentication: Secure login and registration through to ensure that only authorized users access the app.
 - Group Creation and Management: Users can create group and chat, share files/images in group.
 - Real-Time Location: Users can view current location on Map and can search for desired locations.
@@ -102,6 +126,8 @@ effectively, reducing confusion and miscommunication.
  6. **Google Location API key**
  Access the key from google cloud using this [link](https://developers.google.com/maps/get-started).
 
+7. **Weather API key**
+   Access the weather api key from openweathermap using this[link](https://home.openweathermap.org/api_keys).
 
 
  ## Steps to Run
@@ -127,6 +153,8 @@ effectively, reducing confusion and miscommunication.
     PUSHER_SECRET=<YOUR_PUSHER_SECRET_KEY>
 
     NEXT_PUBLIC_LOCATION_KEY=<YOUR_GOOGLE_MAP_API_KEY>
+    GEOAPIFY_API_KEY=<YOUR_GEOAPIFY_API_KEY>
+    NEXT_PUBLIC_WEATHER_API_KEY=<YOUR_NEXT_PUBLIC_WEATHER_API_KEY>
     ```
 3. Next, download the required modules using the command - 
 
