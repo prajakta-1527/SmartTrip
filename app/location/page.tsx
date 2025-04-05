@@ -40,10 +40,8 @@ export default function Location() {
   const [loading, setLoading] = useState(true);
   const [places, setPlaces] = useState<string[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<any[]>([]);
-  useEffect(() => {
-    console.log("📍 Updated Place Coordinates:", placeCoords);
-  }, [placeCoords]);
-  
+
+
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(() => ({ lat, lng }), [lat, lng]);
   const mapOptions = useMemo<google.maps.MapOptions>(
@@ -146,62 +144,62 @@ export default function Location() {
   useEffect(() => {
     const fetchWeather = async () => {
       if (places.length === 0) return;
-  
+
       // Get city names or fallback to name
-      const locationNames = places
-        .map((p) => p.properties.city || p.properties.name || "")
-        .filter(Boolean);
-  
+      const locationNames = places.map((p) => ({
+        lat: p.properties.lat,
+        lon: p.properties.lon,
+      }));
+
+
       try {
         const response = await axios.get("/api/weather", {
           params: {
-            locations: locationNames.join(","),
+            locations: JSON.stringify(locationNames),
             detailed: false, // or true if you want 5-day forecast
           },
         });
-  
+
         // Store data using the original location names as keys
         const results = response.data.results;
-        const weatherMap: Record<string, any> = {};
-        results.forEach((item: any) => {
-          weatherMap[item.location] = item;
-        });
-  
-        setWeatherData(weatherMap);
+        setWeatherData(results);
       } catch (error) {
         console.error("Error fetching weather:", error);
       }
     };
-  
+
     fetchWeather();
   }, [places]);
   if (!isLoaded) return <p>Loading...</p>;
-  console.log("places"  , places);
+
   return (
     <>
-      {/* Header placed at the very top */}
       {conv && users && (
         <Header2 conversation={conv} />
       )}
-     
 
-            <GeoapifySearch
-        onResults={(results) => {
-          setPlaces(results);
-
-          const coords = results.map((place: any) => ({
-            name: place.properties.name || "Unnamed Place",
-            lat: place.geometry.coordinates[1],
-            lng: place.geometry.coordinates[0],
-          }));
-          setPlaceCoords(coords);
-        }}
-      />
+      <div className="my-6 mx-12">
+        {/* Header placed at the very top */}
 
 
-      <div className="flex flex-row">
-        <div className="w-3/4">
-          <main className="flex justify-center align-center m-12 h-[600px] rounded-md shadow-md">
+        <GeoapifySearch
+          onResults={(results) => {
+            setPlaces(results);
+
+            const coords = results.map((place: any) => ({
+              name: place.properties.name || "Unnamed Place",
+              lat: place.geometry.coordinates[1],
+              lng: place.geometry.coordinates[0],
+            }));
+            setPlaceCoords(coords);
+          }}
+        />
+      </div>
+
+
+      <div className="flex flex-row m-12">
+        <div className="w-full">
+          <main className="flex justify-center align-center m-2 h-[620px] rounded-md shadow-md">
             <GoogleMap
               options={mapOptions}
               zoom={14}
@@ -212,7 +210,7 @@ export default function Location() {
             >
               <MarkerF
                 position={mapCenter}
-                title="Your Location"
+                title="Pinned Location"
               />
 
               {markers.map((marker, idx) => (
@@ -231,61 +229,66 @@ export default function Location() {
             </GoogleMap>
           </main>
         </div>
-          
-        <div className="w-1/4 p-12 flex flex-col justify-center">
-          <h1 className="text-2xl font-bold text-center m-6">
-            Recommended Places
-          </h1>
-          <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
-            <div className="flex flex-col gap-4">
-            {places.map((place, index) => {
-  const locationKey = place.properties.city || place.properties.name;
-  const weather = weatherData[locationKey];
 
-  const handleSelect = async () => {
-    const lat = place.properties.lat;
-    const lon = place.properties.lon;
+        {places.length > 0 ? <>
 
-    if (lat && lon) {
-      setLat(parseFloat(lat));
-      setLng(parseFloat(lon));
-    } else {
-      // Fallback: try geocoding the name
-      const results = await getGeocode({ address: place.properties.name });
-      const { lat, lng } = await getLatLng(results[0]);
-      setLat(lat);
-      setLng(lng);
-    }
-  };
+          <div className="w-1/4 p-12 mr-5 flex flex-col justify-center">
+            <h1 className="text-2xl font-bold text-center m-6">
+              Recommended Places
+            </h1>
+            <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
+              <div className="flex flex-col gap-4">
+                {places.map((place, index) => {
+                  const locationKey = place.properties.city || place.properties.name;
+                  const weather = weatherData[locationKey];
 
-  return (
-    <div
-      key={index}
-      onClick={handleSelect}
-      className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
-    >
-      <h2 className="text-lg font-semibold">
-        {place.properties.name || "Unnamed Place"}
-      </h2>
-      <p className="text-sm text-gray-600">
-        {place.properties.formatted || "No address available"}
-      </p>
-      {weather ? (
-        <div className="mt-2 text-sm text-blue-800">
-          🌡 Temp: {weather.temperature}°C <br />
-          💧 Humidity: {weather.humidity}% <br />
-          🌤 {weather.weather}
-        </div>
-      ) : (
-        <p className="text-xs text-gray-400">Fetching weather...</p>
-      )}
-    </div>
-  );
-})}
+                  const handleSelect = async () => {
+                    const lat = place.properties.lat;
+                    const lon = place.properties.lon;
 
-            </div>
-          </ScrollArea>
-        </div>
+                    if (lat && lon) {
+                      setLat(parseFloat(lat));
+                      setLng(parseFloat(lon));
+                    } else {
+                      // Fallback: try geocoding the name
+                      const results = await getGeocode({ address: place.properties.name });
+                      const { lat, lng } = await getLatLng(results[0]);
+                      setLat(lat);
+                      setLng(lng);
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={index}
+                      onClick={handleSelect}
+                      className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
+                    >
+                      <h2 className="text-lg font-semibold">
+                        {place.properties.name || "Unnamed Place"}
+                      </h2>
+                      <p className="text-sm text-gray-600">
+                        {place.properties.formatted || "No address available"}
+                      </p>
+                      {weatherData[index] ? (
+                        <div className="mt-2 text-sm text-blue-800">
+                          🌡 Temp: {weatherData[index].temperature}°C <br />
+                          💧 Humidity: {weatherData[index].humidity}% <br />
+                          💨 Wind: {weatherData[index].wind_speed} m/s <br />
+                          🌤 {weatherData[index].description[0].main}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400">Fetching weather...</p>
+                      )}
+                    </div>
+                  );
+                })}
+
+              </div>
+            </ScrollArea>
+          </div>
+
+        </> : <></>}
       </div>
     </>
   );
