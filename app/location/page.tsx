@@ -14,7 +14,7 @@ import { toast } from "react-hot-toast";
 import GeoapifySearch from "./components/GeoapifySearch";
 import { PlacesAutocomplete } from "../components/PlacesAutoComplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import Header from "./components/Header";
+import Header2 from "./components/Header2";
 
 import { useLiveLocations } from "@/app/hooks/useLiveLocation";
 import useCurrentUser from "../hooks/useCurrentUser";
@@ -139,16 +139,14 @@ export default function Location() {
   );
 
   if (!isLoaded) return <p>Loading...</p>;
-
+  console.log("places"  , places);
   return (
     <>
-      <div className="flex flex-col">
-        <div className="flex flex-row justify-between p-4 m-12">
-          {conv && users && (
-            <Header groupName={conv.name} userNames={users} />
-          )}
-        </div>
-      </div>
+      {/* Header placed at the very top */}
+      {conv && users && (
+        <Header2 conversation={conv} />
+      )}
+     
 
       <GeoapifySearch onResults={(results) => setPlaces(results)} />
 
@@ -184,7 +182,7 @@ export default function Location() {
             </GoogleMap>
           </main>
         </div>
-
+          
         <div className="w-1/4 p-12 flex flex-col justify-center">
           <h1 className="text-2xl font-bold text-center m-6">
             Recommended Places
