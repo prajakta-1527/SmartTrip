@@ -58,16 +58,18 @@ effectively, reducing confusion and miscommunication.
 ## **APIs Used**
 - Pusher API - For enabling chats, uses WebSockets to share messages.
 - Google Maps API - For fetching real time location of user.access
+- Geoapify API - For personalized place recommendations that match group preferences
+
 
 ## **Features Currently Implemented** 
 - User Authentication: Secure login and registration through to ensure that only authorized users access the app.
 - Group Creation and Management: Users can create group and chat, share files/images in group.
 - Real-Time Location: Users can view current location on Map and can search for desired locations.
+- Geoapify Implementation: View recommended places based on group preferences by giving prompt.
 
 ## **Features To be Implemented** 
 - Location Sharing : Users can share their live location with others in the group. Members will be able to see each other’s location on an interactive map.
 - Location Tracking: Users can set a common spot on the map and track every group member's location
-- Geoapify Implementation: View recommended places based on group preferences by giving prompt.
 - Voting for Destinations: Users can suggest destinations and vote on them. The app will highlight the most popular choice for easier decision-making.
 - Weather Integration: The app will integrate weather APIs (OpenWeatherMap or Weatherstack) to provide current and forecasted weather conditions for the selected destination.
 - Route Planning: The app will display optimized travel routes using the Google Maps Directions API, offering options for walking, driving, or public transportation, along with estimated travel times and distances.
