@@ -143,7 +143,7 @@ effectively, reducing confusion and miscommunication.
 
 ## Team Members - **Team 4**
 
-- Prajakta Darade   -  210001052
+- Prajakta Darade   - 210001052
 - Harsh Rawat       - 210001023
 - Vivek Bhojwani    - 210001079
 - Sachin Sharma     - 2402101003
