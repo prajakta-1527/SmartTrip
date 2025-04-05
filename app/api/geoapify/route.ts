@@ -1,39 +1,79 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query") || "Berlin";
-  const categories = searchParams.get("categories") || "tourism";
-  const radius = searchParams.get("radius") || "10000"; // Default radius in meters
-  const limit = searchParams.get("limit") || "5";
+const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
-  const apiKey = process.env.GEOAPIFY_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: "Missing API key" }, { status: 500 });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const response = await axios.get("https://api.geoapify.com/v2/places", {
+    const {
+      location,
+      radius = "2000",
+      category = "accommodation.hotel",
+      minRating = "0",
+      maxResults = "20",
+      sortBy = "distance",
+    } = await req.json();
+
+    if (!GEOAPIFY_API_KEY) {
+      return NextResponse.json({ error: "Missing API Key" }, { status: 500 });
+    }
+
+    const geocodeRes = await axios.get(
+      `https://api.geoapify.com/v1/geocode/search`,
+      {
+        params: {
+          text: location,
+          lang: "en",
+          limit: 5,
+          format: "json",
+          apiKey: GEOAPIFY_API_KEY,
+        },
+      }
+    );
+
+    const results = geocodeRes.data?.results || [];
+
+    let result = results.find((r: any) =>
+      (
+        `${r.city ?? ""} ${r.county ?? ""} ${r.state ?? ""} ${r.formatted ?? ""}`
+      ).toLowerCase().includes("indore")
+    );
+
+    if (!result && results.length > 0) {
+      result = results[0];
+    }
+
+    if (!result) {
+      console.warn("Invalid location format received:", location);
+      return NextResponse.json({ error: "Invalid location" }, { status: 400 });
+    }
+
+    const { lat, lon } = result;
+    const resolvedLocation = result.formatted || location;
+
+    const placesRes = await axios.get(`https://api.geoapify.com/v2/places`, {
       params: {
-        apiKey,
-        categories,
-        filter: `circle:${75.341},${31.14},${radius}`, // Berlin example coordinates
-        limit,
+        categories: category,
+        filter: `circle:${lon},${lat},${radius}`,
+        bias: `proximity:${lon},${lat}`,
+        limit: maxResults,
+        apiKey: GEOAPIFY_API_KEY,
+        sort: sortBy === "distance" ? undefined : sortBy,
       },
     });
-    
-    const recommendations = response.data.features.map((feature: any) => ({
-        name: feature.properties.name,
-        address: feature.properties.formatted,
-        category: feature.properties.categories?.[0] || "Unknown",
-        coordinates: feature.geometry.coordinates,
-    }));
-    console.log("Recommendations:", recommendations);
 
-    return NextResponse.json(recommendations);
-  } catch (error) {
-    console.error("Geoapify API Error:", error);
-    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
+    const features = placesRes.data?.features || [];
+    const filtered = features.filter((place: any) => {
+      const rating = place.properties.rating || 0;
+      return rating >= parseFloat(minRating);
+    });
+
+    return NextResponse.json({ features: filtered, resolvedLocation });
+  } catch (error: any) {
+    console.error("Geoapify API error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch places" },
+      { status: 500 }
+    );
   }
 }
