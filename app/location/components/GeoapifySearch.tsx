@@ -47,14 +47,14 @@ export default function GeoapifySearch({ onResults }: Props) {
       <h2 className="text-lg font-bold mb-2">Search Nearby Places</h2>
 
       {resolvedLocation && (
-        <p className="text-sm text-gray-500 mb-2">
+        <p className="text-sm text-gray-500 mb-6">
           Searching near: <span className="font-medium">{resolvedLocation}</span>
         </p>
       )}
 
       <div className="flex flex-row justify-between items-center gap-2">
-        <div className="flex flex-col">
-          {location !== "" ? <><label className="text-xs text-gray px-2 font-medium relative top-2 left-2 bg-white w-max ">Location</label></> : <></>}
+        <div className="flex flex-col relative">
+          {location !== "" ? <><label className="absolute text-xs text-gray px-2 font-xs top-[-10px] left-2 bg-white w-max ">Location</label></> : <></>}
           <input
             type="text"
             placeholder="Enter a location"
@@ -73,7 +73,7 @@ export default function GeoapifySearch({ onResults }: Props) {
           <option value="catering.restaurant">Restaurants</option>
           <option value="tourism.attraction">Attractions</option>
           <option value="commercial.shopping_mall">Shopping Malls</option>
-          
+
           <option value="entertainment.museum">Museums</option>
           {/* <option value="leisure.swimming_pool">Swimming Pools</option> */}
           {/* <option value="entertainment.nightclub">Nightclubs</option> */}
@@ -96,26 +96,32 @@ export default function GeoapifySearch({ onResults }: Props) {
           <option value="20000">20 km</option>
         </select>
 
-        <input
-          type="number"
-          placeholder="Minimum Rating (0 - 5)"
-          value={minRating}
-          onChange={(e) => setMinRating(e.target.value)}
-          className="border p-2 rounded w-1/6"
-          min={0}
-          max={5}
-          step={0.1}
-        />
+        <div className="flex flex-col relative w-1/6">
+          {minRating !== "" ? <><label className="absolute text-xs text-gray px-2 font-xs top-[-10px] left-2 bg-white w-max">Min Rating</label></> : <></>}
+          <input
+            type="number"
+            placeholder="Minimum Rating (0 - 5)"
+            value={minRating}
+            onChange={(e) => setMinRating(e.target.value)}
+            className="border p-2 rounded w-full"
+            min={0}
+            max={5}
+            step={0.1}
+          />
+        </div>
 
-        <input
-          type="number"
-          placeholder="Max Results"
-          value={maxResults}
-          onChange={(e) => setMaxResults(e.target.value)}
-          className="border p-2 rounded w-1/6"
-          min={1}
-          max={100}
-        />
+        <div className="flex flex-col relative w-1/6">
+          {maxResults !== "" ? <><label className="absolute text-xs text-gray px-2 font-xs top-[-10px] left-2 bg-white w-max">Max Results</label></> : <></>}
+          <input
+            type="number"
+            placeholder="Max Results"
+            value={maxResults}
+            onChange={(e) => setMaxResults(e.target.value)}
+            className="border p-2 rounded w-full"
+            min={1}
+            max={100}
+          />
+        </div>
 
         <select
           value={sortBy}
