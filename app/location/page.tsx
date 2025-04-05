@@ -21,11 +21,13 @@ import useCurrentUser from "../hooks/useCurrentUser";
 
 const DEFAULT_LOCATION = { lat: 22.5, lng: 75.9 };
 
+
 export default function Location() {
   const user_email = useCurrentUser();
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversationId");
-
+    const [placeCoords, setPlaceCoords] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  
   const [lat, setLat] = useState(DEFAULT_LOCATION.lat);
   const [lng, setLng] = useState(DEFAULT_LOCATION.lng);
   const [curlat, setCurlat] = useState(0);
@@ -38,7 +40,10 @@ export default function Location() {
   const [loading, setLoading] = useState(true);
   const [places, setPlaces] = useState<string[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<any[]>([]);
-
+  useEffect(() => {
+    console.log("📍 Updated Place Coordinates:", placeCoords);
+  }, [placeCoords]);
+  
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(() => ({ lat, lng }), [lat, lng]);
   const mapOptions = useMemo<google.maps.MapOptions>(
@@ -148,7 +153,19 @@ export default function Location() {
       )}
      
 
-      <GeoapifySearch onResults={(results) => setPlaces(results)} />
+            <GeoapifySearch
+        onResults={(results) => {
+          setPlaces(results);
+
+          const coords = results.map((place: any) => ({
+            name: place.properties.name || "Unnamed Place",
+            lat: place.geometry.coordinates[1],
+            lng: place.geometry.coordinates[0],
+          }));
+          setPlaceCoords(coords);
+        }}
+      />
+
 
       <div className="flex flex-row">
         <div className="w-3/4">

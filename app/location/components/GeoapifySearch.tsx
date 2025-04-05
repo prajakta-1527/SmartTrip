@@ -68,7 +68,17 @@ export default function GeoapifySearch({ onResults }: Props) {
           <option value="accommodation.hotel">Hotels</option>
           <option value="catering.restaurant">Restaurants</option>
           <option value="tourism.attraction">Attractions</option>
+          <option value="commercial.shopping_mall">Shopping Malls</option>
+          
+          <option value="entertainment.museum">Museums</option>
+          {/* <option value="leisure.swimming_pool">Swimming Pools</option> */}
+          {/* <option value="entertainment.nightclub">Nightclubs</option> */}
+          {/* <option value="entertainment.fitness_centre">Fitness Centres</option> */}
+          <option value="sport.sports_centre">Sports Centres</option>
         </select>
+
+
+
 
         <select
           value={radius}
