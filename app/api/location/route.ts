@@ -10,7 +10,7 @@ export async function getUserImageByEmail(email: string) {
       select: { image: true },
     });
 
-    console.log("Db user",user)
+    // console.log("Db user",user)
 
     if (!user || !user.image) {
       console.log("User not found or image not set.");
@@ -29,12 +29,12 @@ export async function getUserImageByEmail(email: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("Received body:", body);
+    // console.log("Received body:", body);
     const { userId, location } = body;
     let image = null
     if (userId!==null){
     image = await getUserImageByEmail(userId);
-    console.log("User image:", image);
+    // console.log("User image:", image);
     }
     
     // if (!userId || !location) {
