@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   onResults: (places: any[]) => void;
@@ -51,19 +52,22 @@ export default function GeoapifySearch({ onResults }: Props) {
         </p>
       )}
 
-      <div className="flex flex-col gap-2">
-        <input
-          type="text"
-          placeholder="Enter a location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="border p-2 rounded"
-        />
+      <div className="flex flex-row justify-between items-center gap-2">
+        <div className="flex flex-col">
+          {location !== "" ? <><label className="text-xs text-gray px-2 font-medium relative top-2 left-2 bg-white w-max ">Location</label></> : <></>}
+          <input
+            type="text"
+            placeholder="Enter a location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+        </div>
 
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-1/6 bg-white"
         >
           <option value="accommodation.hotel">Hotels</option>
           <option value="catering.restaurant">Restaurants</option>
@@ -73,7 +77,7 @@ export default function GeoapifySearch({ onResults }: Props) {
         <select
           value={radius}
           onChange={(e) => setRadius(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-1/6 bg-white"
         >
           <option value="1000">1 km</option>
           <option value="2000">2 km</option>
@@ -87,7 +91,7 @@ export default function GeoapifySearch({ onResults }: Props) {
           placeholder="Minimum Rating (0 - 5)"
           value={minRating}
           onChange={(e) => setMinRating(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-1/6"
           min={0}
           max={5}
           step={0.1}
@@ -98,7 +102,7 @@ export default function GeoapifySearch({ onResults }: Props) {
           placeholder="Max Results"
           value={maxResults}
           onChange={(e) => setMaxResults(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-1/6"
           min={1}
           max={100}
         />
@@ -106,19 +110,19 @@ export default function GeoapifySearch({ onResults }: Props) {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-1/6 bg-white"
         >
           <option value="distance">Sort by Distance</option>
           <option value="rating">Sort by Rating</option>
         </select>
-
-        <button
-          onClick={fetchPlaces}
-          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
       </div>
+      <Button
+        onClick={fetchPlaces}
+        className="mt-4 w-1/6"
+      // className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+      >
+        {loading ? "Searching..." : "Search"}
+      </Button>
     </div>
   );
 }
