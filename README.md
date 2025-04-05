@@ -59,20 +59,18 @@ effectively, reducing confusion and miscommunication.
 - Pusher API - For enabling chats, uses WebSockets to share messages.
 - Google Maps API - For fetching real time location of user.access
 - Geoapify API - For personalized place recommendations that match group preferences
+- GoogleAuth API: Secures user login and prevents unauthorized access.
+- OpenWeatherMap API: Shows current and forecasted weather for travel planning.
 
 
-## **Features Currently Implemented** 
-- User Authentication: Secure login and registration through to ensure that only authorized users access the app.
-- Group Creation and Management: Users can create group and chat, share files/images in group.
-- Real-Time Location: Users can view current location on Map and can search for desired locations.
-- Geoapify Implementation: View recommended places based on group preferences by giving prompt.
-
-## **Features To be Implemented** 
-- Location Sharing : Users can share their live location with others in the group. Members will be able to see each other’s location on an interactive map.
-- Location Tracking: Users can set a common spot on the map and track every group member's location
-- Voting for Destinations: Users can suggest destinations and vote on them. The app will highlight the most popular choice for easier decision-making.
-- Weather Integration: The app will integrate weather APIs (OpenWeatherMap or Weatherstack) to provide current and forecasted weather conditions for the selected destination.
-- Route Planning: The app will display optimized travel routes using the Google Maps Directions API, offering options for walking, driving, or public transportation, along with estimated travel times and distances.
+## **Features Implemented** 
+- User Authentication: Provides secure registration and login functionality to ensure that only authorized users can access the application.
+- Group Creation and Management: Users can create travel groups, add members, and engage in group chats. They can also share files and images within the group, making collaboration and planning easier.
+- Real-Time Location Access: Users can view their current location on an interactive map and search for desired destinations or points of interest.
+- Live Location Sharing: Users can share their live location with other group members. All members can view each other’s real-time positions on the map, enhancing coordination during trips.
+- Group Location Tracking: Users can mark a common meeting point on the map and track the live location of all group members relative to that spot.
+- Smart Place Suggestions (Geoapify Integration): Based on group preferences and user prompts, the app suggests recommended places to visit using the Geoapify Places API.
+- Weather Information: Integrated with the OpenWeatherMap API, the app displays current weather conditions and forecasts for selected destinations, helping users plan their activities accordingly.
 
 ## **Preliminary Setup**
 
@@ -103,6 +101,8 @@ effectively, reducing confusion and miscommunication.
  6. **Google Location API key**
  Access the key from google cloud using this [link](https://developers.google.com/maps/get-started).
 
+7. **Weather API key**
+   Access the weather api key from openweathermap using this[link](https://home.openweathermap.org/api_keys).
 
 
  ## Steps to Run
