@@ -128,6 +128,13 @@ export default function Location() {
       }))
       .filter((loc) => emails.includes(loc.title));
 
+     const avgLat = updated.reduce((sum, loc) => sum + loc.lat, 0) / updated.length;
+      const avgLng = updated.reduce((sum, loc) => sum + loc.lng, 0) / updated.length;
+    if(avgLat && avgLng){
+
+    setLat(avgLat);
+    setLng(avgLng);
+    }
     setFilteredLocations(updated);
   }, [loc, emails]);
 

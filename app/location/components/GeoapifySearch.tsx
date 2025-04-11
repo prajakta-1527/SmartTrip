@@ -47,7 +47,6 @@ export default function GeoapifySearch({groupLat, groupLng ,onResults }: Props) 
 
   const fetchPlacesGroup = async () => {
     if (!groupLat || !groupLng || groupLat==0 || groupLng==0) return ("Fetching Locations");
-    console.log("stage1", groupLat, groupLng);
     try {
       const res = await axios.post("/api/geoapify", {
         latitude: groupLat,
