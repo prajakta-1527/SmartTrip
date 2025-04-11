@@ -45,7 +45,7 @@ const Header2: React.FC<HeaderProps> = ({ conversation }) => {
             className="lg:hidden block text-cyan-500 hover:text-cyan-600 transition cursor-pointer"
             href="/conversations"
           >
-            <HiChevronLeft size={32} />
+            <HiChevronLeft size={34} />
           </Link>
 
           {conversation.isGroup ? (
@@ -55,7 +55,7 @@ const Header2: React.FC<HeaderProps> = ({ conversation }) => {
           )}
 
           <div className="flex flex-col">
-            <div>
+            <div className="text-[1.25rem] font-bold  font-medium text-neutral-800">
               {conversation.name || otherUser?.name || otherUser?.email}
             </div>
             <div className="text-sm font-light text-neutral-500">

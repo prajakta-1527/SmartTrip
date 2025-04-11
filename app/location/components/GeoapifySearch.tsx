@@ -5,10 +5,12 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 
 type Props = {
+  groupLat: number;
+  groupLng: number;
   onResults: (places: any[]) => void;
 };
 
-export default function GeoapifySearch({ onResults }: Props) {
+export default function GeoapifySearch({groupLat, groupLng ,onResults }: Props) {
   const [location, setLocation] = useState("");
   const [radius, setRadius] = useState("2000");
   const [category, setCategory] = useState("accommodation.hotel");
@@ -24,6 +26,32 @@ export default function GeoapifySearch({ onResults }: Props) {
 
     try {
       const res = await axios.post("/api/geoapify", {
+        location,
+        radius,
+        category,
+        minRating,
+        maxResults,
+        sortBy,
+      });
+
+      onResults(res.data.features || []);
+      setResolvedLocation(res.data.resolvedLocation || location);
+    } catch (error) {
+      console.error("Geoapify error:", error);
+      alert("Error fetching places.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const fetchPlacesGroup = async () => {
+    if (!groupLat || !groupLng || groupLat==0 || groupLng==0) return ("Fetching Locations");
+    console.log("stage1", groupLat, groupLng);
+    try {
+      const res = await axios.post("/api/geoapify", {
+        latitude: groupLat,
+        longitude: groupLng,
         location,
         radius,
         category,
@@ -139,6 +167,15 @@ export default function GeoapifySearch({ onResults }: Props) {
       >
         {loading ? "Searching..." : "Search"}
       </Button>
+      
+      <Button
+        onClick={fetchPlacesGroup}
+        className="mt-4 w-1/5 ml-4"
+      // className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+      >
+       Use Current Group Location
+      </Button>
+
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
+import { format } from "path";
 
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
 
 export async function POST(req: NextRequest) {
   try {
     const {
+      latitude:latitude ,
+      longitude: longitude,
       location,
       radius = "2000",
       category = "accommodation.hotel",
@@ -18,6 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing API Key" }, { status: 500 });
     }
 
+    if(!latitude || !longitude) {
     const geocodeRes = await axios.get(
       `https://api.geoapify.com/v1/geocode/search`,
       {
@@ -69,6 +73,44 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ features: filtered, resolvedLocation });
+    }
+    else{
+
+      const { lat, lon } = {
+        lat: parseFloat(latitude),
+        lon: parseFloat(longitude),};
+
+        const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse`, {
+          params: {
+            lat: lat,
+            lon: lon,
+            lang: "en",
+            format : "json",
+            apiKey: GEOAPIFY_API_KEY,
+            type: "street",
+          },
+        });
+      const resolvedLocation = result.data.results[0].formatted || location;
+  
+      const placesRes = await axios.get(`https://api.geoapify.com/v2/places`, {
+        params: {
+          categories: category,
+          filter: `circle:${lon},${lat},${radius}`,
+          bias: `proximity:${lon},${lat}`,
+          limit: maxResults,
+          apiKey: GEOAPIFY_API_KEY,
+          sort: sortBy === "distance" ? undefined : sortBy,
+        },
+      });
+  
+      const features = placesRes.data?.features || [];
+      const filtered = features.filter((place: any) => {
+        const rating = place.properties.rating || 0;
+        return rating >= parseFloat(minRating);
+      });
+  
+      return NextResponse.json({ features: filtered, resolvedLocation });
+    }
   } catch (error: any) {
     console.error("Geoapify API error:", error);
     return NextResponse.json(

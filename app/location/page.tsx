@@ -183,6 +183,8 @@ export default function Location() {
 
 
         <GeoapifySearch
+        groupLat={curlat}
+        groupLng={curlng}
           onResults={(results) => {
             setPlaces(results);
 
