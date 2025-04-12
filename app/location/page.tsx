@@ -10,6 +10,7 @@ import { getGeocode, getLatLng } from "use-places-autocomplete";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 
 import GeoapifySearch from "./components/GeoapifySearch";
 import { PlacesAutocomplete } from "../components/PlacesAutoComplete";
@@ -24,10 +25,12 @@ const DEFAULT_LOCATION = { lat: 22.5, lng: 75.9 };
 
 export default function Location() {
   const user_email = useCurrentUser();
+  console.log("User email:", user_email);
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversationId");
   const [placeCoords, setPlaceCoords] = useState<{ name: string; lat: number; lng: number }[]>([]);
   const [weatherData, setWeatherData] = useState<Record<string, any>>({});
+  const [weatherDataPinned, setWeatherDataPinned] = useState<Record<string, any>>({});
   const [lat, setLat] = useState(DEFAULT_LOCATION.lat);
   const [lng, setLng] = useState(DEFAULT_LOCATION.lng);
   const [curlat, setCurlat] = useState(0);
@@ -40,7 +43,9 @@ export default function Location() {
   const [loading, setLoading] = useState(true);
   const [places, setPlaces] = useState<string[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<any[]>([]);
-
+  const [pinnedLocations, setPinnedLocations] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  const [showPinned, setShowPinned] = useState(false);
+  const [recommendedPlaces, setRecommendedPlaces] = useState([]);
 
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(() => ({ lat, lng }), [lat, lng]);
@@ -147,6 +152,39 @@ export default function Location() {
       })),
     [filteredLocations]
   );
+  const handlePin = async (place: any) => {
+    console.log("Pinning place:", place);
+    console.log("Conversation ID:", conversationId);
+    console.log("User email:", user_email);
+
+    try {
+      await axios.post("/api/pins", {
+        name: place.properties.name,
+        address: place.properties.formatted,
+        userEmail: user_email,
+        lat: parseFloat(place.properties.lat),
+        lon: parseFloat(place.properties.lon),
+        conversationId: conversationId, // Make sure you have this available
+      });
+  
+      toast.success("Location pinned successfully!");
+    } catch (err) {
+      console.error("Error pinning location:", err);
+      toast.error("Failed to pin location.");
+    }
+  };
+
+const handleDelete = async (id: string) => {
+  await fetch("/api/pins", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
+  });
+  // Update local state after delete
+  setPinnedLocations((prev) => prev.filter((loc) => loc.id !== id));
+};
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -204,7 +242,49 @@ export default function Location() {
           }}
         />
       </div>
+      <div className="flex justify-end mr-20 mb-4">
+      <Button
+  className="ml-20  font-semibold"
+  onClick={async () => {
+    setShowPinned(!showPinned);
+    if(pinnedLocations.length > 0){
+      setPinnedLocations([]);
+      setWeatherDataPinned({});
+      return;
+    }
+    try {
+      const res = await axios.get("/api/pins", {
+        params: {
+          conversationId,
+        },
+      });
+      const data = res.data.pins || [];
+      setPinnedLocations(data);
 
+      // Optionally fetch weather
+      const locs = data.map((pin: any) => ({
+        lat: pin.lat,
+        lon: pin.lon,
+      }));
+
+      const weatherRes = await axios.get("/api/weather", {
+        params: {
+          locations: JSON.stringify(locs),
+          detailed: false,
+        },
+      });
+
+      setWeatherDataPinned(weatherRes.data.results);
+      toast.success("Fetched pinned locations!");
+    } catch (err) {
+      console.error("Error fetching pinned locations:", err);
+      toast.error("Failed to load pinned locations");
+    }
+  }}
+>
+{showPinned ? "Close Pinned Locations" : "📌 View Pinned Locations"}
+</Button>
+</div>
 
       <div className="flex flex-row m-12">
         <div className="w-full">
@@ -241,7 +321,7 @@ export default function Location() {
 
         {places.length > 0 ? <>
 
-          <div className="w-1/4 p-12 mr-5 flex flex-col justify-center">
+          <div className="w-1/4 px-8 mr-5 flex flex-col justify-center">
             <h1 className="text-2xl font-bold text-center m-6">
               Recommended Places
             </h1>
@@ -289,7 +369,16 @@ export default function Location() {
                       ) : (
                         <p className="text-xs text-gray-400">Fetching weather...</p>
                       )}
+                        <Button
+                            className="mt-3 text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            onClick={() => {
+                              handlePin(place);
+                            }}
+                          >
+                            📍 Pin this place
+                          </Button>
                     </div>
+                    
                   );
                 })}
 
@@ -298,6 +387,69 @@ export default function Location() {
           </div>
 
         </> : <></>}
+
+        {pinnedLocations.length > 0 ? <> 
+          <div className="w-1/4 px-8 mr-5  flex flex-col justify-center">
+            <h1 className="text-2xl font-bold text-center m-6">
+      Pinned Locations
+    </h1>
+    <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
+    <div className="flex flex-col gap-4">
+        {pinnedLocations.map((loc, index) => {
+          const weather = weatherDataPinned[index];
+
+          const handleSelect = async () => {
+            const lat = loc.lat;
+            const lon = loc.lon;
+            if (lat && lon) {
+              setLat(parseFloat(lat));
+              setLng(parseFloat(lon));
+            } else {
+              // Fallback: try geocoding the name
+              const results = await getGeocode({ address: loc.name });
+              const { lat, lng } = await getLatLng(results[0]);
+              setLat(lat);
+              setLng(lng);
+            }
+          };
+
+          return (
+            <div
+              key={index}
+              onClick={handleSelect}
+              className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
+              >
+              <h2 className="text-lg font-semibold">{loc.name}</h2>
+              <p className="text-sm text-gray-600">
+                {loc.address || "No address available"}
+              </p>
+              {weather ? (
+                <div className="mt-2 text-sm text-blue-800">
+                  🌡 Temp: {weather.temperature}°C <br />
+                  💧 Humidity: {weather.humidity}% <br />
+                  💨 Wind: {weather.wind_speed} m/s <br />
+                  🌤 {weather.description[0]?.main}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400">Fetching weather...</p>
+              )}
+              <Button
+                            className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
+                            onClick={() => {
+                              handleDelete(loc.id);
+                            }}
+                          >
+                           Delete location
+                </Button>
+            </div>
+          );
+        })}
+      </div>
+    </ScrollArea>
+  </div> 
+  
+        </> : <></>}
+
       </div>
     </>
   );
