@@ -159,6 +159,27 @@ export default function Location() {
   );
   // const val = {dine};
 
+  const handleVote = async (pinId: string, type: "upvote" | "downvote") => {
+    try {
+      const res = await axios.post("/api/pins/vote", {
+        pinId,
+        voteType: type,
+        userEmail: user_email,
+      });
+
+      toast.success("Vote registered!");
+
+      // Update UI
+      setPinnedLocations((prev) =>
+        prev.map((loc) =>
+          loc.id === pinId ? { ...loc, ...res.data.updatedPin } : loc
+        )
+      );
+    } catch (err) {
+      toast.error("Vote failed!");
+      console.error("Vote error:", err);
+    }
+  };
 
   const handlePin = async (place: any) => {
     console.log("Pinning place:", place);
@@ -469,16 +490,39 @@ export default function Location() {
                         >
                           Delete location
                         </Button>
+                        <p>{loc.name}</p>
+
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleVote(loc.id, "upvote")}
+                            disabled={loc.upvotedBy?.includes(user_email)}
+                            className="text-green-600"
+                          >
+                            👍 {loc.upvotes}
+                          </button>
+
+                          <button
+                            onClick={() => handleVote(loc.id, "downvote")}
+                            disabled={loc.downvotedBy?.includes(user_email)}
+                            className="text-red-600"
+                          >
+                            👎 {loc.downvotes}
+                          </button>
+
+
+                        </div>
+
                       </div>
+
                     );
                   })}
                 </div>
               </ScrollArea>
             </div>
 
-          </> : <></>}</TabsContent>
-        </Tabs>
-      </div>
-    </>
-  );
+          </> : <></>}
+
+          </div>
+        </>
+        );
 }

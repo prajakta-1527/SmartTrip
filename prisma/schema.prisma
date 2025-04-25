@@ -95,8 +95,11 @@ model PinnedLocation {
   lat            Float
   lon            Float
   createdAt      DateTime      @default(now())
-
-  // Relation to Conversation (group)
   conversationId String        @db.ObjectId
   conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  upvotes        Int           @default(0)
+  downvotes      Int           @default(0)
+  upvotedBy      String[]      @default([])
+  downvotedBy    String[]      @default([])
 }
