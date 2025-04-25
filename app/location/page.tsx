@@ -19,6 +19,12 @@ import Header2 from "./components/Header2";
 
 import { useLiveLocations } from "@/app/hooks/useLiveLocation";
 import useCurrentUser from "../hooks/useCurrentUser";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 
 const DEFAULT_LOCATION = { lat: 22.5, lng: 75.9 };
 
@@ -133,12 +139,12 @@ export default function Location() {
       }))
       .filter((loc) => emails.includes(loc.title));
 
-     const avgLat = updated.reduce((sum, loc) => sum + loc.lat, 0) / updated.length;
-      const avgLng = updated.reduce((sum, loc) => sum + loc.lng, 0) / updated.length;
-    if(avgLat && avgLng){
+    const avgLat = updated.reduce((sum, loc) => sum + loc.lat, 0) / updated.length;
+    const avgLng = updated.reduce((sum, loc) => sum + loc.lng, 0) / updated.length;
+    if (avgLat && avgLng) {
 
-    setLat(avgLat);
-    setLng(avgLng);
+      setLat(avgLat);
+      setLng(avgLng);
     }
     setFilteredLocations(updated);
   }, [loc, emails]);
@@ -153,7 +159,7 @@ export default function Location() {
   );
   // const val = {dine};
 
-  
+
   const handlePin = async (place: any) => {
     console.log("Pinning place:", place);
     console.log("Conversation ID:", conversationId);
@@ -168,7 +174,7 @@ export default function Location() {
         lon: parseFloat(place.properties.lon),
         conversationId: conversationId, // Make sure you have this available
       });
-  
+
       toast.success("Location pinned successfully!");
     } catch (err) {
       console.error("Error pinning location:", err);
@@ -176,17 +182,62 @@ export default function Location() {
     }
   };
 
-const handleDelete = async (id: string) => {
-  await fetch("/api/pins", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id }),
-  });
-  // Update local state after delete
-  setPinnedLocations((prev) => prev.filter((loc) => loc.id !== id));
-};
+  const handlePinLocation = async () => {
+    // If already showing, hide and reset everything
+    // if (showPinned) {
+    //   setPinnedLocations([]);
+    //   setWeatherDataPinned({});
+    //   setShowPinned(false);
+    //   return;
+    // }
+
+    try {
+      const res = await axios.get("/api/pins", {
+        params: {
+          conversationId,
+        },
+      });
+
+      const data = res.data.pins || [];
+      setPinnedLocations(data);
+
+      const locs = data.map((pin: any) => ({
+        lat: pin.lat,
+        lon: pin.lon,
+      }));
+
+      if (locs.length !== 0) {
+        const weatherRes = await axios.get("/api/weather", {
+          params: {
+            locations: JSON.stringify(locs),
+            detailed: false,
+          },
+        });
+        setWeatherDataPinned(weatherRes.data.results);
+        setShowPinned(true); // only show pins if we have any
+        toast.success("Fetched pinned locations!");
+      } else {
+        setWeatherDataPinned({});
+        toast("No pinned locations found.");
+      }
+
+    } catch (err) {
+      console.error("Error fetching pinned locations:", err);
+      toast.error("Failed to load pinned locations");
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    await fetch("/api/pins", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+    // Update local state after delete
+    setPinnedLocations((prev) => prev.filter((loc) => loc.id !== id));
+  };
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -230,8 +281,8 @@ const handleDelete = async (id: string) => {
 
 
         <GeoapifySearch
-        groupLat={curlat}
-        groupLng={curlng}
+          groupLat={curlat}
+          groupLng={curlng}
           onResults={(results) => {
             setPlaces(results);
 
@@ -244,58 +295,6 @@ const handleDelete = async (id: string) => {
           }}
         />
       </div>
-      <div className="flex justify-end mr-20 mb-4">
-      <Button
-  className="ml-20 font-semibold"
-  onClick={async () => {
-    // If already showing, hide and reset everything
-    if (showPinned) {
-      setPinnedLocations([]);
-      setWeatherDataPinned({});
-      setShowPinned(false);
-      return;
-    }
-
-    try {
-      const res = await axios.get("/api/pins", {
-        params: {
-          conversationId,
-        },
-      });
-
-      const data = res.data.pins || [];
-      setPinnedLocations(data);
-
-      const locs = data.map((pin: any) => ({
-        lat: pin.lat,
-        lon: pin.lon,
-      }));
-
-      if (locs.length !== 0) {
-        const weatherRes = await axios.get("/api/weather", {
-          params: {
-            locations: JSON.stringify(locs),
-            detailed: false,
-          },
-        });
-        setWeatherDataPinned(weatherRes.data.results);
-        setShowPinned(true); // only show pins if we have any
-        toast.success("Fetched pinned locations!");
-      } else {
-        setWeatherDataPinned({});
-        toast("No pinned locations found.");
-      }
-
-    } catch (err) {
-      console.error("Error fetching pinned locations:", err);
-      toast.error("Failed to load pinned locations");
-    }
-  }}
->
-  {showPinned ? "Close Pinned Locations" : "📌 View Pinned Locations"}
-</Button>
-
-</div>
 
       <div className="flex flex-row m-12">
         <div className="w-full">
@@ -310,7 +309,7 @@ const handleDelete = async (id: string) => {
             >
               <MarkerF
                 position={mapCenter}
-                title="Pinned Location"
+                title="📌 Pinned Location"
               />
 
               {markers.map((marker, idx) => (
@@ -329,138 +328,156 @@ const handleDelete = async (id: string) => {
             </GoogleMap>
           </main>
         </div>
+        <hr className="border-l-2 border-gray-300 h-[650px] mx-4" />
+        <Tabs defaultValue="recommend" className="w-[400px] mx-2" >
+          <TabsList className="rounded-md p-1">
+            <TabsTrigger
+              value="recommend"
+              className="p-2 px-4 text-black bg-white hover:bg-gray-700 data-[state=active]:bg-black data-[state=active]:text-white rounded-md transition shadow-lg"
+            >
+              Recommended places
+            </TabsTrigger>
+            <TabsTrigger
+              value="pinned"
+              onClick={handlePinLocation}
+              className="p-2 px-4 text-black bg-white hover:bg-gray-700 data-[state=active]:bg-black data-[state=active]:text-white rounded-md transition shadow-lg"
+            >
+              Pinned Locations
+            </TabsTrigger>
+          </TabsList>
 
-        {places.length > 0 ? <>
+          <TabsContent value="recommend"> {places.length > 0 ? <>
 
-          <div className="w-1/4 px-8 mr-5 flex flex-col justify-center">
-            <h1 className="text-2xl font-bold text-center m-6">
-              Recommended Places
-            </h1>
-            <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
-              <div className="flex flex-col gap-4">
-                {places.map((place, index) => {
-                  const locationKey = place.properties.city || place.properties.name;
-                  const weather = weatherData[locationKey];
+            <div className="w-full mr-5 flex flex-col justify-center h-[620px]">
+              {/* <h1 className="text-2xl font-bold text-center m-6">
+                Recommended Places
+              </h1> */}
+              <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
+                <div className="flex flex-col gap-4">
+                  {places.map((place, index) => {
+                    const locationKey = place.properties.city || place.properties.name;
+                    const weather = weatherData[locationKey];
 
-                  const handleSelect = async () => {
-                    const lat = place.properties.lat;
-                    const lon = place.properties.lon;
+                    const handleSelect = async () => {
+                      const lat = place.properties.lat;
+                      const lon = place.properties.lon;
 
-                    if (lat && lon) {
-                      setLat(parseFloat(lat));
-                      setLng(parseFloat(lon));
-                    } else {
-                      // Fallback: try geocoding the name
-                      const results = await getGeocode({ address: place.properties.name });
-                      const { lat, lng } = await getLatLng(results[0]);
-                      setLat(lat);
-                      setLng(lng);
-                    }
-                  };
+                      if (lat && lon) {
+                        setLat(parseFloat(lat));
+                        setLng(parseFloat(lon));
+                      } else {
+                        // Fallback: try geocoding the name
+                        const results = await getGeocode({ address: place.properties.name });
+                        const { lat, lng } = await getLatLng(results[0]);
+                        setLat(lat);
+                        setLng(lng);
+                      }
+                    };
 
-                  return (
-                    <div
-                      key={index}
-                      onClick={handleSelect}
-                      className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
-                    >
-                      <h2 className="text-lg font-semibold">
-                        {place.properties.name || "Unnamed Place"}
-                      </h2>
-                      <p className="text-sm text-gray-600">
-                        {place.properties.formatted || "No address available"}
-                      </p>
-                      {weatherData[index] ? (
-                        <div className="mt-2 text-sm text-blue-800">
-                          🌡 Temp: {weatherData[index].temperature}°C <br />
-                          💧 Humidity: {weatherData[index].humidity}% <br />
-                          💨 Wind: {weatherData[index].wind_speed} m/s <br />
-                          🌤 {weatherData[index].description[0].main}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-gray-400">Fetching weather...</p>
-                      )}
+                    return (
+                      <div
+                        key={index}
+                        onClick={handleSelect}
+                        className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
+                      >
+                        <h2 className="text-lg font-semibold">
+                          {place.properties.name || "Unnamed Place"}
+                        </h2>
+                        <p className="text-sm text-gray-600">
+                          {place.properties.formatted || "No address available"}
+                        </p>
+                        {weatherData[index] ? (
+                          <div className="mt-2 text-sm text-blue-800">
+                            🌡 Temp: {weatherData[index].temperature}°C <br />
+                            💧 Humidity: {weatherData[index].humidity}% <br />
+                            💨 Wind: {weatherData[index].wind_speed} m/s <br />
+                            🌤 {weatherData[index].description[0].main}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-400">Fetching weather...</p>
+                        )}
                         <Button
-                            className="mt-3 text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                            onClick={() => {
-                              handlePin(place);
-                            }}
-                          >
-                            📍 Pin this place
-                          </Button>
-                    </div>
-                    
-                  );
-                })}
+                          className="mt-3 text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                          onClick={() => {
+                            handlePin(place);
+                          }}
+                        >
+                          📍 Pin this place
+                        </Button>
+                      </div>
 
-              </div>
-            </ScrollArea>
-          </div>
+                    );
+                  })}
 
-        </> : <></>}
-
-        {pinnedLocations.length > 0 ? <> 
-          <div className="w-1/4 px-8 mr-5  flex flex-col justify-center">
-            <h1 className="text-2xl font-bold text-center m-6">
-      Pinned Locations
-    </h1>
-    <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
-    <div className="flex flex-col gap-4">
-        {pinnedLocations.map((loc, index) => {
-          const weather = weatherDataPinned[index];
-
-          const handleSelect = async () => {
-            const lat = loc.lat;
-            const lon = loc.lon;
-            if (lat && lon) {
-              setLat(parseFloat(lat));
-              setLng(parseFloat(lon));
-            } else {
-              // Fallback: try geocoding the name
-              const results = await getGeocode({ address: loc.name });
-              const { lat, lng } = await getLatLng(results[0]);
-              setLat(lat);
-              setLng(lng);
-            }
-          };
-
-          return (
-            <div
-              key={index}
-              onClick={handleSelect}
-              className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
-              >
-              <h2 className="text-lg font-semibold">{loc.name}</h2>
-              <p className="text-sm text-gray-600">
-                {loc.address || "No address available"}
-              </p>
-              {weather ? (
-                <div className="mt-2 text-sm text-blue-800">
-                  🌡 Temp: {weather.temperature}°C <br />
-                  💧 Humidity: {weather.humidity}% <br />
-                  💨 Wind: {weather.wind_speed} m/s <br />
-                  🌤 {weather.description[0]?.main}
                 </div>
-              ) : (
-                <p className="text-xs text-gray-400">Fetching weather...</p>
-              )}
-              <Button
-                            className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
-                            onClick={() => {
-                              handleDelete(loc.id);
-                            }}
-                          >
-                           Delete location
-                </Button>
+              </ScrollArea>
             </div>
-          );
-        })}
-      </div>
-    </ScrollArea>
-  </div> 
-  
-        </> : <></>}
 
+          </> : <> <div className="w-full flex flex-col justify-center items-center h-[620px]">
+
+            No recommendations!
+
+          </div> </>}</TabsContent>
+          <TabsContent value="pinned"> {pinnedLocations.length > 0 ? <>
+            <div className="w-full flex flex-col justify-center">
+
+              <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
+                <div className="flex flex-col gap-4">
+                  {pinnedLocations.map((loc, index) => {
+                    const weather = weatherDataPinned[index];
+
+                    const handleSelect = async () => {
+                      const lat = loc.lat;
+                      const lon = loc.lon;
+                      if (lat && lon) {
+                        setLat(parseFloat(lat));
+                        setLng(parseFloat(lon));
+                      } else {
+                        // Fallback: try geocoding the name
+                        const results = await getGeocode({ address: loc.name });
+                        const { lat, lng } = await getLatLng(results[0]);
+                        setLat(lat);
+                        setLng(lng);
+                      }
+                    };
+
+                    return (
+                      <div
+                        key={index}
+                        onClick={handleSelect}
+                        className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
+                      >
+                        <h2 className="text-lg font-semibold">{loc.name}</h2>
+                        <p className="text-sm text-gray-600">
+                          {loc.address || "No address available"}
+                        </p>
+                        {weather ? (
+                          <div className="mt-2 text-sm text-blue-800">
+                            🌡 Temp: {weather.temperature}°C <br />
+                            💧 Humidity: {weather.humidity}% <br />
+                            💨 Wind: {weather.wind_speed} m/s <br />
+                            🌤 {weather.description[0]?.main}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-400">Fetching weather...</p>
+                        )}
+                        <Button
+                          className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
+                          onClick={() => {
+                            handleDelete(loc.id);
+                          }}
+                        >
+                          Delete location
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            </div>
+
+          </> : <></>}</TabsContent>
+        </Tabs>
       </div>
     </>
   );
