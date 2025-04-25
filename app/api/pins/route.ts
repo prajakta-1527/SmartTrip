@@ -6,27 +6,26 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, address, userEmail, lat, lon, conversationId } = body;
-    
+
     if (!name || !address || !userEmail || !lat || !lon || !conversationId) {
-        return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
-    
+
     console.log('Received body:', body);
     //try
     // Check if the user exists
     const pinned = await prisma.pinnedLocation.create({
-    data: {
+      data: {
         name,
         address,
         userEmail,
         lat,
         lon,
-        conversationId,
-        
-    },
+        conversationId
+      },
     });
     console.log('Pinned location created:', pinned);
-    
+
 
 
     return NextResponse.json({ success: true, pinned }, { status: 200 });
@@ -38,26 +37,26 @@ export async function POST(req: NextRequest) {
 
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const conversationId = searchParams.get('conversationId');
-  
-    if (!conversationId) {
-      return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
-    }
-  
-    try {
-      const pins = await prisma.pinnedLocation.findMany({
-        where: { conversationId },
-        orderBy: { createdAt: 'desc' },
-      });
-  
-      return NextResponse.json({ pins }, { status: 200 });
-    } catch (error) {
-      console.error('Error fetching pins:', error);
-      return NextResponse.json({ error: 'Database error' }, { status: 500 });
-    }
+  const { searchParams } = new URL(req.url);
+  const conversationId = searchParams.get('conversationId');
+
+  if (!conversationId) {
+    return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
   }
-  
+
+  try {
+    const pins = await prisma.pinnedLocation.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return NextResponse.json({ pins }, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching pins:', error);
+    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+  }
+}
+
 
 
 export async function DELETE(req: Request) {
