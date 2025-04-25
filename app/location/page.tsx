@@ -28,6 +28,8 @@ import {
 
 const DEFAULT_LOCATION = { lat: 22.5, lng: 75.9 };
 
+import { DirectionsRenderer } from "@react-google-maps/api";
+
 
 export default function Location() {
   const user_email = useCurrentUser();
@@ -52,6 +54,9 @@ export default function Location() {
   const [pinnedLocations, setPinnedLocations] = useState<{ name: string; lat: number; lng: number }[]>([]);
   const [showPinned, setShowPinned] = useState(false);
   const [recommendedPlaces, setRecommendedPlaces] = useState([]);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+
 
   const libraries = useMemo(() => ["places"], []);
   const mapCenter = useMemo(() => ({ lat, lng }), [lat, lng]);
@@ -65,6 +70,41 @@ export default function Location() {
     }),
     []
   );
+  const getRoute = async (destinationLat: number, destinationLng: number) => {
+    if (!curlat || !curlng || !destinationLat || !destinationLng) {
+      console.error("Missing coordinates for route");
+      toast.error("Invalid coordinates for route!");
+      return;
+    }
+
+    const directionsService = new google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin: { lat: curlat, lng: curlng },
+        destination: { lat: destinationLat, lng: destinationLng },
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          setDirections(result);
+
+          const leg = result.routes[0].legs[0];
+          setRouteInfo({
+            distance: leg.distance.text,
+            duration: leg.duration.text,
+          });
+          toast.success(`ETA: ${leg.duration.text}, Distance: ${leg.distance.text}`);
+
+        } else {
+          toast.error("Unable to get directions");
+          console.error("Directions error:", status, result);
+        }
+      }
+    );
+  };
+
+
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_LOCATION_KEY as string,
@@ -318,8 +358,19 @@ export default function Location() {
       </div>
 
       <div className="flex flex-row m-12">
+
         <div className="w-full">
+          {routeInfo && (
+            <div className="w-full text-center mb-4">
+              <div className="inline-block bg-white border border-blue-400 shadow-md rounded px-4 py-2">
+                <p className="text-blue-800 font-semibold text-sm">
+                  🚗 {routeInfo.distance} &nbsp;&nbsp; ⏱ {routeInfo.duration}
+                </p>
+              </div>
+            </div>
+          )}
           <main className="flex justify-center align-center m-2 h-[620px] rounded-md shadow-md">
+
             <GoogleMap
               options={mapOptions}
               zoom={14}
@@ -332,6 +383,15 @@ export default function Location() {
                 position={mapCenter}
                 title="📌 Pinned Location"
               />
+
+              <MarkerF
+                position={{ lat: curlat, lng: curlng }}
+                title="Your Location"
+                icon={{
+                  url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                }}
+              />
+
 
               {markers.map((marker, idx) => (
                 <MarkerF
@@ -346,6 +406,20 @@ export default function Location() {
                   }}
                 />
               ))}
+              {directions && (
+                <DirectionsRenderer
+                  directions={directions}
+                  options={{
+                    polylineOptions: {
+                      strokeColor: "#0000ff", // pitch blue
+                      strokeOpacity: 0.8,
+                      strokeWeight: 6,
+                    },
+                  }}
+                />
+              )}
+
+
             </GoogleMap>
           </main>
         </div>
@@ -380,20 +454,24 @@ export default function Location() {
                     const weather = weatherData[locationKey];
 
                     const handleSelect = async () => {
-                      const lat = place.properties.lat;
-                      const lon = place.properties.lon;
+                      const lat = parseFloat(place.properties.lat);
+                      const lon = parseFloat(place.properties.lon);
 
                       if (lat && lon) {
-                        setLat(parseFloat(lat));
-                        setLng(parseFloat(lon));
+                        setLat(lat);
+                        setLng(lon);
+                        await getRoute(lat, lon);
                       } else {
-                        // Fallback: try geocoding the name
                         const results = await getGeocode({ address: place.properties.name });
                         const { lat, lng } = await getLatLng(results[0]);
                         setLat(lat);
                         setLng(lng);
+                        await getRoute(lat, lng);
                       }
                     };
+
+
+
 
                     return (
                       <div
@@ -452,17 +530,20 @@ export default function Location() {
                       const handleSelect = async () => {
                         const lat = loc.lat;
                         const lon = loc.lon;
+
                         if (lat && lon) {
-                          setLat(parseFloat(lat));
-                          setLng(parseFloat(lon));
+                          setLat(lat);
+                          setLng(lon);
+                          await getRoute(lat, lon); // ✅ this line is essential!
                         } else {
-                          // Fallback: try geocoding the name
                           const results = await getGeocode({ address: loc.name });
                           const { lat, lng } = await getLatLng(results[0]);
                           setLat(lat);
                           setLng(lng);
+                          await getRoute(lat, lng);
                         }
                       };
+
 
                       return (
                         <div
