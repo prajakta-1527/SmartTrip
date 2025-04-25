@@ -18,6 +18,7 @@ Your intelligent travel planner – find places, plan itineraries, and discover 
 - [APIs Used](#apisused)
 - [Features Implemented](#Features-Implemented)
 - [Preliminary Setup](#PreliminarySetup)
+- [Tests](#Tests)
 - [Getting Started](#getting-started)
 - [Team](#team)
 
@@ -36,6 +37,7 @@ effectively, reducing confusion and miscommunication.
 
 ## Demo
 Check out the live demo: 
+[Link](https://drive.google.com/file/d/1pabayKY-_rb4pk-i19tHdIIrE2v2qQV0/view)
 
 ## **Preview**
 
@@ -155,6 +157,10 @@ Check out the live demo:
 - Install the latest version of Node.JS on your system.
 - To run this, you must have access to some API keys. 
 - Create the account and generate your own API Key for the following.
+
+## Tests
+
+- Unit testing code is done at `SmartTrip/tests/`
 
  ### API Generation Links
  1. **Database URL**  
