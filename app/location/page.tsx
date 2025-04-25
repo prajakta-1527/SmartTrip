@@ -368,7 +368,7 @@ export default function Location() {
             </div>
           )}
           <main className="flex justify-center align-
-          center m-2 h-[620px] rounded-md shadow-md">
+          center m-2 h-[500px] rounded-md shadow-md">
 
             <GoogleMap
               options={mapOptions}
@@ -423,7 +423,7 @@ export default function Location() {
             </GoogleMap>
           </main>
         </div>
-        <hr className="border-l-2 border-gray-300 h-[650px] mx-4" />
+        <hr className="border-l-2 border-gray-300 h-[500px] mx-4" />
         <Tabs defaultValue="recommend" className="w-[400px] mx-2" >
           <TabsList className="rounded-md p-1">
             <TabsTrigger
@@ -443,11 +443,11 @@ export default function Location() {
 
           <TabsContent value="recommend"> {places.length > 0 ? <>
 
-            <div className="w-full mr-5 flex flex-col justify-center h-[620px]">
+            <div className="w-full mr-5 flex flex-col justify-center h-[500px]">
               {/* <h1 className="text-2xl font-bold text-center m-6">
                 Recommended Places
               </h1> */}
-              <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
+              <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
                 <div className="flex flex-col gap-4">
                   {places.map((place, index) => {
                     const locationKey = place.properties.city || place.properties.name;
@@ -509,7 +509,7 @@ export default function Location() {
               </ScrollArea>
             </div>
 
-          </> : <> <div className="w-full flex flex-col justify-center items-center h-[620px]">
+          </> : <> <div className="w-full flex flex-col justify-center items-center h-[400px]">
 
             No recommendations!
 
@@ -519,7 +519,7 @@ export default function Location() {
 
               <div className="w-full flex flex-col justify-center">
 
-                <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
+                <ScrollArea className="h-[500px] w-full rounded-md border p-3 bg-gray-30">
                   <div className="flex flex-col gap-4">
                     {pinnedLocations.map((loc, index) => {
                       const weather = weatherDataPinned[index];

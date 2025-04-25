@@ -1,13 +1,24 @@
 
+# SmartTrip
+Your intelligent travel planner – find places, plan itineraries, and discover personalized recommendations!
+
+![Next.js](https://img.shields.io/badge/Next.js-13-blue)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+
+
+
 ---
+
 ## **Contents**
 - [Purpose](#Purpose)
+- [Demo](#Demo)
 - [Preview](#Preview)
 - [TechStack](#TechStack)
 - [APIs Used](#apisused)
 - [Features Implemented](#Features-Implemented)
 - [Preliminary Setup](#PreliminarySetup)
-- [Steps to run](#Steps-to-run)
+- [Getting Started](#getting-started)
 - [Team](#team)
 
 
@@ -23,44 +34,48 @@ voting systems for decision-making, and route planning to enhance group travel e
 ences. By providing these tools, the app ensures that groups can travel together more
 effectively, reducing confusion and miscommunication.
 
+## Demo
+Check out the live demo: 
+
 ## **Preview**
 1. Register and Login
 <img width="1470" alt="Screenshot 2025-02-28 at 6 08 28 PM" src="https://github.com/user-attachments/assets/8134489c-caf1-441e-9473-ad48b5d46afb" />
 
+--- 
 
 2. Enter a group or personal chat
 <img width="1470" alt="Screenshot 2025-02-28 at 6 09 52 PM" src="https://github.com/user-attachments/assets/79a051df-506e-4721-92a0-59c0213e7d38" />
 
-<img width="1470" alt="Screenshot 2025-02-28 at 6 10 29 PM" src="https://github.com/user-attachments/assets/9a145803-87fe-472e-9dd7-feb5e139628d" />
-<img width="1470" alt="Screenshot 2025-04-05 at 11 32 53 PM" src="https://github.com/user-attachments/assets/dc17775e-8bf3-4ee4-b5d8-f0368d365674" />
-3. Group chat creation pop-up in a trip planning interface.
-<img width="1470" alt="Screenshot 2025-04-05 at 11 34 54 PM" src="https://github.com/user-attachments/assets/827584a0-8051-4657-ba7a-365cd6512d53" />
 
+
+<img width="1470" alt="Screenshot 2025-02-28 at 6 10 29 PM" src="https://github.com/user-attachments/assets/9a145803-87fe-472e-9dd7-feb5e139628d" />
+
+<img width="1470" alt="Screenshot 2025-04-05 at 11 32 53 PM" src="https://github.com/user-attachments/assets/dc17775e-8bf3-4ee4-b5d8-f0368d365674" />
+
+--- 
+3. Group chat creation pop-up in a trip planning interface.
+
+<img width="1470" alt="Screenshot 2025-04-05 at 11 34 54 PM" src="https://github.com/user-attachments/assets/827584a0-8051-4657-ba7a-365cd6512d53" />
+--- 
 4. Group chat screen discussing trip plans with shared images and location
 <img width="1470" alt="Screenshot 2025-02-28 at 6 28 15 PM" src="https://github.com/user-attachments/assets/88c907f3-f280-423e-aa4a-d5c71f1eb491" />
 
-
+--- 
 5. Group details screen displaying name, members, creation date and delete options.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/543bc733-aae1-4db6-a554-520394cfa269" />
 
-
+--- 
 6. Location Map: Once a group is selected, users can view the real-time location of all members in the group who are active. Users can zoom in and out
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/5186991e-0747-474a-af6f-7652e03a08af" />
 
 
-7. Searching Nearby Places based on User prompts like radius in kilometers, minimum distance, preferred type - hotels, restaurants etc.
-<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/e27edc69-7b6e-4ca1-89b6-408ae8813fca" />
 
-
-8. The recommended places from the GeoApify API are displayed as cards, each showing detailed address and weather details from the weather API, allowing users to pin their favorite spots for others to view.
-<img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/4f214443-d347-4e7d-aa8f-64b8dfed9a71" />
-
-
-9. Users can select a location from the list of recommended places. The pinned location is visible to everyone, along with the distance from each user in the group. The user who pinned it appears in the title.
+--- 
+7. Users can select a location from the list of recommended places. The pinned location is visible to everyone, along with the distance from each user in the group. The user who pinned it appears in the title.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/be535797-67d9-4c63-86bc-45b8f925ca3b" />
 
-
-10. The live locations of group members are visible in the map along with the pinned location allowing them to visualise the distance from desired destination.
+--- 
+8. The live locations of group members are visible in the map along with the pinned location allowing them to visualise the distance from desired destination.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/a9e31eac-ea16-4f14-8ae9-24c9c95d41b3" />
 
 
@@ -79,10 +94,12 @@ effectively, reducing confusion and miscommunication.
 
 ## **APIs Used**
 - Pusher API - For enabling chats, uses WebSockets to share messages.
-- Google Maps API - For fetching real time location of user.access
+- Google Maps API - Interactive Google Maps integration for fetching real time location of user.access
 - Geoapify API - For personalized place recommendations that match group preferences
 - GoogleAuth API: Secures user login and prevents unauthorized access.
 - OpenWeatherMap API: Shows current and forecasted weather for travel planning.
+- Google Directions API: For getting most optimised route to the chosen location from current location. 
+
 
 
 ## **Features Implemented** 
@@ -93,7 +110,8 @@ effectively, reducing confusion and miscommunication.
 - Location Sharing : Users can share their live location with others in the group. Members will be able to see each other’s location on an interactive map.
 - Location Tracking: Users can set a common spot on the map and track every group member's location
 - Voting for Destinations: Users can suggest destinations and vote on them. The app will highlight the most popular choice for easier decision-making.
-- Weather Integration: The app will integrate weather APIs (OpenWeatherMap or Weatherstack) to provide current and forecasted weather conditions for the selected destination.
+- Weather Integration: The app has integrated weather API (OpenWeatherMap) to provide current and forecasted weather conditions for the selected destination.
+- Pinned Locations: In a group, users can pin the recommended locations on map and vote on them. 
 - Route Planning: The app will display optimized travel routes using the Google Maps Directions API, offering options for walking, driving, or public transportation, along with estimated travel times and distances.
 
 
@@ -130,7 +148,7 @@ effectively, reducing confusion and miscommunication.
    Access the weather api key from openweathermap using this[link](https://home.openweathermap.org/api_keys).
 
 
- ## Steps to Run
+ ## Getting Started
 
  1. Clone the github repository `https://github.com/prajakta-1527/SmartTrip.git` in your project directory using the command.
 
@@ -177,3 +195,44 @@ effectively, reducing confusion and miscommunication.
 - Vivek Bhojwani    - 210001079
 - Sachin Sharma     - 2402101003
 - Rupal Shah        - 210002065
+
+
+
+---
+
+## **Usage**
+
+Once SmartTrip is set up and running locally on `localhost:3000`, you can explore its full set of features for planning and managing group travel:
+
+### 🔐 **1. Authentication**
+- Start by registering or logging in using Google OAuth.
+- Only authenticated users can access the main application features.
+
+### 👥 **2. Group Management**
+- Create or join groups with your travel companions.
+- Each group has its own chat, planning space, and shared map view.
+
+### 💬 **3. Real-Time Chat**
+- Use the in-app chat to coordinate plans.
+- Share images, links, and locations seamlessly with the group using WebSocket-based messaging (Pusher).
+
+### 📍 **4. Live Location Sharing**
+- Enable location sharing to view real-time positions of all group members on an interactive map.
+- Zoom in/out and click on pins to see who is where.
+
+### 🧭 **5. Discover Places**
+- Use the Geoapify-powered search to find nearby restaurants, hotels, or attractions based on your preferences.
+- Filter places by type, radius, and minimum distance from your current location.
+
+### 📌 **6. Pin & Vote on Locations**
+- Pin suggested places to the group map.
+- Group members can vote on pinned locations—perfect for making collective decisions.
+
+### ☁️ **7. Weather Forecasts**
+- Get real-time weather updates for selected or pinned destinations using the OpenWeatherMap API.
+- Weather data helps the group plan better based on conditions.
+
+### 🛣️ **8. Route Planning**
+- Select a pinned location to view the optimized travel route for each user using the Google Directions API.
+- Choose between walking, driving, or public transit modes.
+

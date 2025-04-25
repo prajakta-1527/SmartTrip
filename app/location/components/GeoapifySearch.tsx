@@ -169,10 +169,10 @@ export default function GeoapifySearch({groupLat, groupLng ,onResults }: Props) 
       
       <Button
         onClick={fetchPlacesGroup}
-        className="mt-4 w-1/5 ml-4"
+        className="mt-4 w-1/4 ml-4"
       // className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
       >
-       Use Current Group Location
+       Use Current Group Location to Search
       </Button>
 
     </div>
