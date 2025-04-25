@@ -142,7 +142,6 @@ export default function Location() {
     }
     setFilteredLocations(updated);
   }, [loc, emails]);
-
   const markers = useMemo(
     () =>
       filteredLocations.map((location) => ({
@@ -152,6 +151,9 @@ export default function Location() {
       })),
     [filteredLocations]
   );
+  // const val = {dine};
+
+  
   const handlePin = async (place: any) => {
     console.log("Pinning place:", place);
     console.log("Conversation ID:", conversationId);
@@ -244,46 +246,55 @@ const handleDelete = async (id: string) => {
       </div>
       <div className="flex justify-end mr-20 mb-4">
       <Button
-  className="ml-20  font-semibold"
+  className="ml-20 font-semibold"
   onClick={async () => {
-    setShowPinned(!showPinned);
-    if(pinnedLocations.length > 0){
+    // If already showing, hide and reset everything
+    if (showPinned) {
       setPinnedLocations([]);
       setWeatherDataPinned({});
+      setShowPinned(false);
       return;
     }
+
     try {
       const res = await axios.get("/api/pins", {
         params: {
           conversationId,
         },
       });
+
       const data = res.data.pins || [];
       setPinnedLocations(data);
 
-      // Optionally fetch weather
       const locs = data.map((pin: any) => ({
         lat: pin.lat,
         lon: pin.lon,
       }));
 
-      const weatherRes = await axios.get("/api/weather", {
-        params: {
-          locations: JSON.stringify(locs),
-          detailed: false,
-        },
-      });
+      if (locs.length !== 0) {
+        const weatherRes = await axios.get("/api/weather", {
+          params: {
+            locations: JSON.stringify(locs),
+            detailed: false,
+          },
+        });
+        setWeatherDataPinned(weatherRes.data.results);
+        setShowPinned(true); // only show pins if we have any
+        toast.success("Fetched pinned locations!");
+      } else {
+        setWeatherDataPinned({});
+        toast("No pinned locations found.");
+      }
 
-      setWeatherDataPinned(weatherRes.data.results);
-      toast.success("Fetched pinned locations!");
     } catch (err) {
       console.error("Error fetching pinned locations:", err);
       toast.error("Failed to load pinned locations");
     }
   }}
 >
-{showPinned ? "Close Pinned Locations" : "📌 View Pinned Locations"}
+  {showPinned ? "Close Pinned Locations" : "📌 View Pinned Locations"}
 </Button>
+
 </div>
 
       <div className="flex flex-row m-12">
