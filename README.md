@@ -38,45 +38,80 @@ effectively, reducing confusion and miscommunication.
 Check out the live demo: 
 
 ## **Preview**
-1. Register and Login
+
+### **1. Authentication**
 <img width="1470" alt="Screenshot 2025-02-28 at 6 08 28 PM" src="https://github.com/user-attachments/assets/8134489c-caf1-441e-9473-ad48b5d46afb" />
 
 --- 
+### **2. Real-Time Group Chat**
 
-2. Enter a group or personal chat
+- Create or join groups or personal chats with your travel companions.
+- Each group has its own chat, planning space, and shared map view.
+
 <img width="1470" alt="Screenshot 2025-02-28 at 6 09 52 PM" src="https://github.com/user-attachments/assets/79a051df-506e-4721-92a0-59c0213e7d38" />
-
-
 
 <img width="1470" alt="Screenshot 2025-02-28 at 6 10 29 PM" src="https://github.com/user-attachments/assets/9a145803-87fe-472e-9dd7-feb5e139628d" />
 
 <img width="1470" alt="Screenshot 2025-04-05 at 11 32 53 PM" src="https://github.com/user-attachments/assets/dc17775e-8bf3-4ee4-b5d8-f0368d365674" />
 
 --- 
-3. Group chat creation pop-up in a trip planning interface.
+###  **3. Real-Time Group Chat Management**
+ 
+ - Group chat creation pop-up in a trip planning interface.
 
 <img width="1470" alt="Screenshot 2025-04-05 at 11 34 54 PM" src="https://github.com/user-attachments/assets/827584a0-8051-4657-ba7a-365cd6512d53" />
+
 --- 
-4. Group chat screen discussing trip plans with shared images and location
+
+ - Group chat screen discussing trip plans with shared images and location
 <img width="1470" alt="Screenshot 2025-02-28 at 6 28 15 PM" src="https://github.com/user-attachments/assets/88c907f3-f280-423e-aa4a-d5c71f1eb491" />
 
 --- 
-5. Group details screen displaying name, members, creation date and delete options.
+- Group details screen displaying name, members, creation date and delete options.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/543bc733-aae1-4db6-a554-520394cfa269" />
 
 --- 
-6. Location Map: Once a group is selected, users can view the real-time location of all members in the group who are active. Users can zoom in and out
+### **4. Live Location Sharing**
+
+- Enable location sharing to view real-time positions of all group members on an interactive map.
+- Zoom in/out and click on pins to see who is where.
+
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/5186991e-0747-474a-af6f-7652e03a08af" />
 
 
 
 --- 
-7. Users can select a location from the list of recommended places. The pinned location is visible to everyone, along with the distance from each user in the group. The user who pinned it appears in the title.
+###  **5. Discover Places**
+-  Users can select a location from the list of recommended places. The pinned location is visible to everyone, along with the distance from each user in the group. The user who pinned it appears in the title.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/be535797-67d9-4c63-86bc-45b8f925ca3b" />
 
 --- 
-8. The live locations of group members are visible in the map along with the pinned location allowing them to visualise the distance from desired destination.
+- The live locations of group members are visible in the map along with the pinned location allowing them to visualise the distance from desired destination.
 <img width="1470" alt="Screenshot 2025-04-05 at 11 33 26 PM" src="https://github.com/user-attachments/assets/a9e31eac-ea16-4f14-8ae9-24c9c95d41b3" />
+
+
+--- 
+
+###  **6. Recommendations and Weather Forecasts, Route planning**
+
+- Users can search nearby locations around the input location along with various filters. The recommendation tab includes description of each location, weather at those location. Option to pin the location. The map shows an optimised route to the seleected location along with estimated travel time and distance. 
+<img width="1470" alt="Screenshot 2025-04-25 at 6 32 27 PM" src="https://github.com/user-attachments/assets/a9a5d335-bb1e-42cd-b8b0-3f87171f4349" />
+
+--- 
+
+###  **6. Pin & Vote on Locations**
+
+- Location can be pinned using the button 'Pin this place`.
+<img width="1470" alt="Screenshot 2025-04-25 at 6 32 38 PM" src="https://github.com/user-attachments/assets/ade78f68-fd02-420f-b428-d9236d9106b7" />
+
+---
+
+- All Pinned locations are shown. Users can upvote or downvote on the locations. All the group users can view the number of votes and choose the destination accordingly. There is an option to delete the pinned place.
+<img width="1470" alt="Screenshot 2025-04-25 at 6 31 51 PM" src="https://github.com/user-attachments/assets/4df295ac-a0e9-40b9-8781-57b57621de3f" />
+
+- Users can search recommendations based on their current group location by clicking on `Use current group location to search`. 
+<img width="1470" alt="Screenshot 2025-04-25 at 6 29 01 PM" src="https://github.com/user-attachments/assets/f7bd90db-f23d-44c0-93f5-32f765150e95" />
+
 
 
 ## **Tech stack**
@@ -199,40 +234,4 @@ Check out the live demo:
 
 
 ---
-
-## **Usage**
-
-Once SmartTrip is set up and running locally on `localhost:3000`, you can explore its full set of features for planning and managing group travel:
-
-### 🔐 **1. Authentication**
-- Start by registering or logging in using Google OAuth.
-- Only authenticated users can access the main application features.
-
-### 👥 **2. Group Management**
-- Create or join groups with your travel companions.
-- Each group has its own chat, planning space, and shared map view.
-
-### 💬 **3. Real-Time Chat**
-- Use the in-app chat to coordinate plans.
-- Share images, links, and locations seamlessly with the group using WebSocket-based messaging (Pusher).
-
-### 📍 **4. Live Location Sharing**
-- Enable location sharing to view real-time positions of all group members on an interactive map.
-- Zoom in/out and click on pins to see who is where.
-
-### 🧭 **5. Discover Places**
-- Use the Geoapify-powered search to find nearby restaurants, hotels, or attractions based on your preferences.
-- Filter places by type, radius, and minimum distance from your current location.
-
-### 📌 **6. Pin & Vote on Locations**
-- Pin suggested places to the group map.
-- Group members can vote on pinned locations—perfect for making collective decisions.
-
-### ☁️ **7. Weather Forecasts**
-- Get real-time weather updates for selected or pinned destinations using the OpenWeatherMap API.
-- Weather data helps the group plan better based on conditions.
-
-### 🛣️ **8. Route Planning**
-- Select a pinned location to view the optimized travel route for each user using the Google Directions API.
-- Choose between walking, driving, or public transit modes.
 
