@@ -13,7 +13,6 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 
 import GeoapifySearch from "./components/GeoapifySearch";
-import { PlacesAutocomplete } from "../components/PlacesAutoComplete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Header2 from "./components/Header2";
 
@@ -25,7 +24,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-
 const DEFAULT_LOCATION = { lat: 22.5, lng: 75.9 };
 
 import { DirectionsRenderer } from "@react-google-maps/api";
@@ -361,15 +359,16 @@ export default function Location() {
 
         <div className="w-full">
           {routeInfo && (
-            <div className="w-full text-center mb-4">
-              <div className="inline-block bg-white border border-blue-400 shadow-md rounded px-4 py-2">
-                <p className="text-blue-800 font-semibold text-sm">
-                  🚗 {routeInfo.distance} &nbsp;&nbsp; ⏱ {routeInfo.duration}
-                </p>
-              </div>
+            <div className="w-full text-center mb-4 border border-blue-800 shadow-md rounded py-2">
+              {/* <div className="inline-block bg-white border border-blue-400 shadow-md rounded px-4 py-2"> */}
+              <p className="text-md">
+                You are <span className="text-blue-800 text-lg font-bold"> 🚗 {routeInfo.distance} and ⏱ {routeInfo.duration} </span> away from your pinned location ! Reach faster, your friends are waiting for you
+              </p>
+              {/* </div> */}
             </div>
           )}
-          <main className="flex justify-center align-center m-2 h-[620px] rounded-md shadow-md">
+          <main className="flex justify-center align-
+          center m-2 h-[620px] rounded-md shadow-md">
 
             <GoogleMap
               options={mapOptions}
@@ -387,6 +386,7 @@ export default function Location() {
               <MarkerF
                 position={{ lat: curlat, lng: curlng }}
                 title="Your Location"
+                visible={true}
                 icon={{
                   url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
                 }}
@@ -410,6 +410,8 @@ export default function Location() {
                 <DirectionsRenderer
                   directions={directions}
                   options={{
+
+                    // suppressMarkers: true,
                     polylineOptions: {
                       strokeColor: "#0000ff", // pitch blue
                       strokeOpacity: 0.8,
@@ -418,8 +420,6 @@ export default function Location() {
                   }}
                 />
               )}
-
-
             </GoogleMap>
           </main>
         </div>
@@ -470,9 +470,6 @@ export default function Location() {
                       }
                     };
 
-
-
-
                     return (
                       <div
                         key={index}
@@ -496,7 +493,7 @@ export default function Location() {
                           <p className="text-xs text-gray-400">Fetching weather...</p>
                         )}
                         <Button
-                          className="mt-3 text-sm px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                          className="mt-3 text-sm px-3 py-1 bg-blue-700 text-white rounded hover:bg-blue-600 transition"
                           onClick={() => {
                             handlePin(place);
                           }}
@@ -565,21 +562,14 @@ export default function Location() {
                           ) : (
                             <p className="text-xs text-gray-400">Fetching weather...</p>
                           )}
-                          <Button
-                            className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
-                            onClick={() => {
-                              handleDelete(loc.id);
-                            }}
-                          >
-                            Delete location
-                          </Button>
                           <p>{loc.name}</p>
 
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 justify-between gap-2 mt-3">
+
                             <button
                               onClick={() => handleVote(loc.id, "upvote")}
                               disabled={loc.upvotedBy?.includes(user_email)}
-                              className="text-green-600"
+                              className="text-green-600 text-2xl"
                             >
                               👍 {loc.upvotes}
                             </button>
@@ -587,11 +577,20 @@ export default function Location() {
                             <button
                               onClick={() => handleVote(loc.id, "downvote")}
                               disabled={loc.downvotedBy?.includes(user_email)}
-                              className="text-red-600"
+                              className="text-red-600 text-2xl"
                             >
                               👎 {loc.downvotes}
                             </button>
 
+
+                            <Button
+                              className=" text-sm px-3 py-1 bg-gray-500 text-white rounded transition"
+                              onClick={() => {
+                                handleDelete(loc.id);
+                              }}
+                            >
+                              Delete location
+                            </Button>
 
                           </div>
 
