@@ -159,6 +159,27 @@ export default function Location() {
   );
   // const val = {dine};
 
+  const handleVote = async (pinId: string, type: "upvote" | "downvote") => {
+    try {
+      const res = await axios.post("/api/pins/vote", {
+        pinId,
+        voteType: type,
+        userEmail: user_email,
+      });
+
+      toast.success("Vote registered!");
+
+      // Update UI
+      setPinnedLocations((prev) =>
+        prev.map((loc) =>
+          loc.id === pinId ? { ...loc, ...res.data.updatedPin } : loc
+        )
+      );
+    } catch (err) {
+      toast.error("Vote failed!");
+      console.error("Vote error:", err);
+    }
+  };
 
   const handlePin = async (place: any) => {
     console.log("Pinning place:", place);
@@ -418,65 +439,91 @@ export default function Location() {
             No recommendations!
 
           </div> </>}</TabsContent>
-          <TabsContent value="pinned"> {pinnedLocations.length > 0 ? <>
-            <div className="w-full flex flex-col justify-center">
+          <TabsContent value="pinned">
+            {pinnedLocations.length > 0 ? <>
 
-              <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
-                <div className="flex flex-col gap-4">
-                  {pinnedLocations.map((loc, index) => {
-                    const weather = weatherDataPinned[index];
+              <div className="w-full flex flex-col justify-center">
 
-                    const handleSelect = async () => {
-                      const lat = loc.lat;
-                      const lon = loc.lon;
-                      if (lat && lon) {
-                        setLat(parseFloat(lat));
-                        setLng(parseFloat(lon));
-                      } else {
-                        // Fallback: try geocoding the name
-                        const results = await getGeocode({ address: loc.name });
-                        const { lat, lng } = await getLatLng(results[0]);
-                        setLat(lat);
-                        setLng(lng);
-                      }
-                    };
+                <ScrollArea className="h-[600px] w-full rounded-md border p-3 bg-gray-30">
+                  <div className="flex flex-col gap-4">
+                    {pinnedLocations.map((loc, index) => {
+                      const weather = weatherDataPinned[index];
 
-                    return (
-                      <div
-                        key={index}
-                        onClick={handleSelect}
-                        className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
-                      >
-                        <h2 className="text-lg font-semibold">{loc.name}</h2>
-                        <p className="text-sm text-gray-600">
-                          {loc.address || "No address available"}
-                        </p>
-                        {weather ? (
-                          <div className="mt-2 text-sm text-blue-800">
-                            🌡 Temp: {weather.temperature}°C <br />
-                            💧 Humidity: {weather.humidity}% <br />
-                            💨 Wind: {weather.wind_speed} m/s <br />
-                            🌤 {weather.description[0]?.main}
-                          </div>
-                        ) : (
-                          <p className="text-xs text-gray-400">Fetching weather...</p>
-                        )}
-                        <Button
-                          className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
-                          onClick={() => {
-                            handleDelete(loc.id);
-                          }}
+                      const handleSelect = async () => {
+                        const lat = loc.lat;
+                        const lon = loc.lon;
+                        if (lat && lon) {
+                          setLat(parseFloat(lat));
+                          setLng(parseFloat(lon));
+                        } else {
+                          // Fallback: try geocoding the name
+                          const results = await getGeocode({ address: loc.name });
+                          const { lat, lng } = await getLatLng(results[0]);
+                          setLat(lat);
+                          setLng(lng);
+                        }
+                      };
+
+                      return (
+                        <div
+                          key={index}
+                          onClick={handleSelect}
+                          className="w-full p-6 rounded-md shadow-md bg-white cursor-pointer hover:bg-blue-50 transition"
                         >
-                          Delete location
-                        </Button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </div>
+                          <h2 className="text-lg font-semibold">{loc.name}</h2>
+                          <p className="text-sm text-gray-600">
+                            {loc.address || "No address available"}
+                          </p>
+                          {weather ? (
+                            <div className="mt-2 text-sm text-blue-800">
+                              🌡 Temp: {weather.temperature}°C <br />
+                              💧 Humidity: {weather.humidity}% <br />
+                              💨 Wind: {weather.wind_speed} m/s <br />
+                              🌤 {weather.description[0]?.main}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-gray-400">Fetching weather...</p>
+                          )}
+                          <Button
+                            className="mt-3 text-sm px-3 py-1 bg-red-400 text-white rounded hover:bg-red-500 transition"
+                            onClick={() => {
+                              handleDelete(loc.id);
+                            }}
+                          >
+                            Delete location
+                          </Button>
+                          <p>{loc.name}</p>
 
-          </> : <></>}</TabsContent>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleVote(loc.id, "upvote")}
+                              disabled={loc.upvotedBy?.includes(user_email)}
+                              className="text-green-600"
+                            >
+                              👍 {loc.upvotes}
+                            </button>
+
+                            <button
+                              onClick={() => handleVote(loc.id, "downvote")}
+                              disabled={loc.downvotedBy?.includes(user_email)}
+                              className="text-red-600"
+                            >
+                              👎 {loc.downvotes}
+                            </button>
+
+
+                          </div>
+
+                        </div>
+
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              </div>
+
+            </> : <></>}
+          </TabsContent>
         </Tabs>
       </div>
     </>
